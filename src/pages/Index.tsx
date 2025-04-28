@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +18,7 @@ import {
 import {
   fetchChatSessions,
   fetchStats
-} from '@/services/mockData';
+} from '@/services/supabase';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -42,7 +41,6 @@ const Index = () => {
     queryFn: fetchStats
   });
 
-  // Filter sessions based on search query and status
   const filteredSessions = sessions.filter(session => {
     const matchesSearch = 
       !searchQuery || 
@@ -60,45 +58,59 @@ const Index = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <Button onClick={() => navigate('/setup-whatsapp')}>
+          <div>
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-green">
+              Dashboard
+            </h1>
+            <p className="text-gray-500">Welcome back to your WhatsApp Business Hub</p>
+          </div>
+          <Button 
+            onClick={() => navigate('/setup-whatsapp')}
+            className="bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-90 transition-opacity"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Connect WhatsApp
           </Button>
         </div>
         
-        {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard 
             title="Total Conversations" 
             value={stats?.total_conversations || 0}
             icon={<MessageSquare className="h-4 w-4" />}
+            className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg hover:shadow-xl transition-shadow"
           />
           <StatCard 
             title="Active Conversations" 
             value={stats?.active_conversations || 0}
             icon={<UserCheck className="h-4 w-4" />}
-            className="bg-green-50"
+            className="bg-gradient-to-br from-green-50 to-emerald-50 border-none shadow-lg hover:shadow-xl transition-shadow"
           />
           <StatCard 
             title="Closed Conversations" 
             value={stats?.resolved_conversations || 0}
             icon={<CheckCircle className="h-4 w-4" />}
+            className="bg-gradient-to-br from-blue-50 to-indigo-50 border-none shadow-lg hover:shadow-xl transition-shadow"
           />
           <StatCard 
             title="New Contacts Today" 
             value={stats?.new_contacts_today || 0}
             icon={<Clock className="h-4 w-4" />}
+            className="bg-gradient-to-br from-pink-50 to-rose-50 border-none shadow-lg hover:shadow-xl transition-shadow"
             description="New customers in the last 24 hours"
           />
         </div>
 
-        {/* Conversations List */}
-        <div className="bg-white rounded-md border">
-          <div className="p-4 border-b">
+        <div className="bg-white/50 backdrop-blur border rounded-lg shadow-lg">
+          <div className="p-4 border-b backdrop-blur">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium">Recent Conversations</h2>
-              <Button variant="outline" size="sm" onClick={() => navigate('/chat')}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate('/chat')}
+                className="hover:bg-gray-100/50"
+              >
                 View All
               </Button>
             </div>
@@ -108,7 +120,7 @@ const Index = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search by name or phone number..."
-                  className="pl-8"
+                  className="pl-8 bg-white/50 backdrop-blur border-gray-200"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -117,7 +129,7 @@ const Index = () => {
           </div>
           
           <Tabs defaultValue="all" onValueChange={setStatusFilter}>
-            <div className="px-4 border-b">
+            <div className="px-4 border-b backdrop-blur">
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="open">Active</TabsTrigger>
@@ -126,33 +138,14 @@ const Index = () => {
               </TabsList>
             </div>
             
-            <TabsContent value="all" className="p-4 pt-2">
-              <ChatSessionList 
-                sessions={filteredSessions} 
-                isLoading={isLoadingSessions}
-              />
-            </TabsContent>
-            
-            <TabsContent value="open" className="p-4 pt-2">
-              <ChatSessionList 
-                sessions={filteredSessions} 
-                isLoading={isLoadingSessions} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="pending" className="p-4 pt-2">
-              <ChatSessionList 
-                sessions={filteredSessions} 
-                isLoading={isLoadingSessions}
-              />
-            </TabsContent>
-            
-            <TabsContent value="closed" className="p-4 pt-2">
-              <ChatSessionList 
-                sessions={filteredSessions} 
-                isLoading={isLoadingSessions}
-              />
-            </TabsContent>
+            {['all', 'open', 'pending', 'closed'].map((status) => (
+              <TabsContent key={status} value={status} className="p-4 pt-2">
+                <ChatSessionList 
+                  sessions={filteredSessions} 
+                  isLoading={isLoadingSessions}
+                />
+              </TabsContent>
+            ))}
           </Tabs>
         </div>
       </div>
