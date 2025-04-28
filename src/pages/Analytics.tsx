@@ -1,9 +1,22 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 type ChatSession = Database['public']['Tables']['chat_sessions']['Row'];
 type Message = Database['public']['Tables']['messages']['Row'];
@@ -61,6 +74,74 @@ const Analytics = () => {
   const totalMessages = messages.length;
   const aiMessages = messages.filter(m => m.role === 'ai').length;
 
+  // Prepare data for the chart: Messages per day
+  const messagesByDay = messages.reduce((acc: { [key: string]: number }, message) => {
+    const date = new Date(message.timestamp!).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    acc[date] = (acc[date] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Generate labels and data for the chart (last 7 days)
+  const today = new Date();
+  const labels: string[] = [];
+  const dataPoints: number[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dateString = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    labels.push(dateString);
+    dataPoints.push(messagesByDay[dateString] || 0);
+  }
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: 'Messages Sent',
+        data: dataPoints,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Messages Sent Per Day (Last 7 Days)',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Number of Messages',
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date',
+        },
+      },
+    },
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-4">
@@ -99,6 +180,16 @@ const Analytics = () => {
             </CardContent>
           </Card>
         </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Messages Over Time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[400px]">
+              <Bar data={chartData} options={chartOptions} />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
