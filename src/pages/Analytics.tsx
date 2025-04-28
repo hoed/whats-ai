@@ -1,120 +1,101 @@
-
 import React from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { fetchStats } from '@/services/supabase';
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-} from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type ChatSession = Database['public']['Tables']['chat_sessions']['Row'];
+type Message = Database['public']['Tables']['messages']['Row'];
+
+// Fetch analytics data
+const fetchAnalytics = async () => {
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('chat_sessions')
+    .select('*');
+  if (sessionsError) {
+    console.error('Error fetching chat sessions for analytics:', sessionsError);
+    throw new Error(sessionsError.message);
+  }
+  console.log('Fetched chat sessions for analytics:', sessions);
+
+  const { data: messages, error: messagesError } = await supabase
+    .from('messages')
+    .select('*');
+  if (messagesError) {
+    console.error('Error fetching messages for analytics:', messagesError);
+    throw new Error(messagesError.message);
+  }
+  console.log('Fetched messages for analytics:', messages);
+
+  return { sessions, messages };
+};
 
 const Analytics = () => {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['stats'],
-    queryFn: fetchStats,
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['analytics'],
+    queryFn: fetchAnalytics,
   });
 
-  const mockData = [
-    { name: 'Mon', conversations: 4, resolved: 3 },
-    { name: 'Tue', conversations: 3, resolved: 2 },
-    { name: 'Wed', conversations: 7, resolved: 5 },
-    { name: 'Thu', conversations: 5, resolved: 4 },
-    { name: 'Fri', conversations: 6, resolved: 5 },
-    { name: 'Sat', conversations: 2, resolved: 2 },
-    { name: 'Sun', conversations: 3, resolved: 2 },
-  ];
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div>Loading...</div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="text-red-500">Error: {(error as Error).message}</div>
+      </DashboardLayout>
+    );
+  }
+
+  const { sessions = [], messages = [] } = data || {};
+
+  // Basic metrics
+  const totalSessions = sessions.length;
+  const openSessions = sessions.filter(s => s.status === 'open').length;
+  const totalMessages = messages.length;
+  const aiMessages = messages.filter(m => m.role === 'ai').length;
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-green">
-            Analytics Dashboard
-          </h1>
-          <p className="text-gray-500">Monitor your WhatsApp business metrics</p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg">
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Analytics</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Total Conversations</CardTitle>
+              <CardTitle>Total Chat Sessions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.total_conversations || 0}</div>
+              <p className="text-3xl font-bold">{totalSessions}</p>
             </CardContent>
           </Card>
-
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-none shadow-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Active Conversations</CardTitle>
+              <CardTitle>Open Sessions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.active_conversations || 0}</div>
+              <p className="text-3xl font-bold">{openSessions}</p>
             </CardContent>
           </Card>
-
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-none shadow-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Resolution Rate</CardTitle>
+              <CardTitle>Total Messages</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {stats?.total_conversations 
-                  ? Math.round((stats.resolved_conversations / stats.total_conversations) * 100)
-                  : 0}%
-              </div>
+              <p className="text-3xl font-bold">{totalMessages}</p>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="col-span-1 border-none shadow-lg bg-white/50 backdrop-blur">
+          <Card>
             <CardHeader>
-              <CardTitle>Weekly Activity</CardTitle>
+              <CardTitle>AI Messages</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer className="h-[300px]" config={{}}>
-                <LineChart data={mockData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="conversations" 
-                    stroke="#0284c7" 
-                    strokeWidth={2}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="resolved" 
-                    stroke="#10b981" 
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          <Card className="col-span-1 border-none shadow-lg bg-white/50 backdrop-blur">
-            <CardHeader>
-              <CardTitle>Conversation Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer className="h-[300px]" config={{}}>
-                <BarChart data={mockData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="conversations" fill="#0284c7" />
-                  <Bar dataKey="resolved" fill="#10b981" />
-                </BarChart>
-              </ChartContainer>
+              <p className="text-3xl font-bold">{aiMessages}</p>
             </CardContent>
           </Card>
         </div>
