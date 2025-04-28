@@ -9,7 +9,145 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      ai_profiles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          prompt_system: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          prompt_system: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          prompt_system?: string
+        }
+        Relationships: []
+      }
+      chat_sessions: {
+        Row: {
+          assigned_to: string | null
+          contact_id: string | null
+          id: string
+          last_activity: string | null
+          status: Database["public"]["Enums"]["session_status"] | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          id?: string
+          last_activity?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+        }
+        Update: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          id?: string
+          last_activity?: string | null
+          status?: Database["public"]["Enums"]["session_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          phone_number: string
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          phone_number: string
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          phone_number?: string
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          contact_id: string | null
+          content: string
+          id: string
+          role: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          content: string
+          id?: string
+          role?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          content?: string
+          id?: string
+          role?: string | null
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          tags: string[] | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          tags?: string[] | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          tags?: string[] | null
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +156,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      session_status: "open" | "pending" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +271,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      session_status: ["open", "pending", "closed"],
+    },
   },
 } as const
