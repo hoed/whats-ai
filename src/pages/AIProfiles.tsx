@@ -28,7 +28,11 @@ const fetchAIProfiles = async (): Promise<AIProfile[]> => {
     .from('ai_profiles')
     .select('*')
     .order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error fetching AI profiles:', error);
+    throw new Error(error.message);
+  }
+  console.log('Fetched AI profiles:', data);
   return data;
 };
 
@@ -39,7 +43,10 @@ const createAIProfile = async (newProfile: Omit<AIProfile, 'id' | 'created_at'>)
     .insert([newProfile])
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error creating AI profile:', error);
+    throw new Error(error.message);
+  }
   return data;
 };
 

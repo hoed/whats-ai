@@ -41,7 +41,11 @@ const ChatDetail = () => {
         .select('*, contact:contacts(*)')
         .eq('id', sessionId!)
         .single();
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching chat session:', error);
+        throw new Error(error.message);
+      }
+      console.log('Fetched chat session:', data);
       return data as ChatSession;
     },
     enabled: !!sessionId,
@@ -61,7 +65,11 @@ const ChatDetail = () => {
         `)
         .eq('contact_id', session?.contact_id!)
         .order('timestamp', { ascending: true });
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching messages:', error);
+        throw new Error(error.message);
+      }
+      console.log('Fetched messages:', data);
       return data as (Message & {
         ai_profile: { name: string } | null;
         template: { title: string } | null;
@@ -78,7 +86,11 @@ const ChatDetail = () => {
       const { data, error } = await supabase
         .from('ai_profiles')
         .select('*');
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching AI profiles:', error);
+        throw new Error(error.message);
+      }
+      console.log('Fetched AI profiles for dropdown:', data);
       return data as AIProfile[];
     },
   });
@@ -90,7 +102,11 @@ const ChatDetail = () => {
       const { data, error } = await supabase
         .from('templates')
         .select('*');
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching templates:', error);
+        throw new Error(error.message);
+      }
+      console.log('Fetched templates for dropdown:', data);
       return data as Template[];
     },
   });
@@ -102,7 +118,11 @@ const ChatDetail = () => {
       const { data, error } = await supabase
         .from('training_data')
         .select('*');
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching training data:', error);
+        throw new Error(error.message);
+      }
+      console.log('Fetched training data for dropdown:', data);
       return data as TrainingData[];
     },
   });
@@ -123,7 +143,10 @@ const ChatDetail = () => {
         .insert([newMessageData])
         .select()
         .single();
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error('Error sending message:', error);
+        throw new Error(error.message);
+      }
       return data;
     },
     onSuccess: () => {

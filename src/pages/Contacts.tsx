@@ -41,7 +41,12 @@ const fetchContacts = async (): Promise<Contact[]> => {
     `)
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error fetching contacts:', error);
+    throw new Error(error.message);
+  }
+
+  console.log('Fetched contacts:', data);
 
   // Transform the data to include message count, latest session status, and session ID
   return data.map(contact => ({
@@ -59,7 +64,10 @@ const createContact = async (newContact: Omit<Contact, 'id' | 'created_at' | 'up
     .insert([newContact])
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error creating contact:', error);
+    throw new Error(error.message);
+  }
   return data;
 };
 

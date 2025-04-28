@@ -29,7 +29,11 @@ const fetchTemplates = async (): Promise<Template[]> => {
     .from('templates')
     .select('*')
     .order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error fetching templates:', error);
+    throw new Error(error.message);
+  }
+  console.log('Fetched templates:', data);
   return data;
 };
 
@@ -40,7 +44,10 @@ const createTemplate = async (newTemplate: Omit<Template, 'id' | 'created_at'>) 
     .insert([newTemplate])
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error('Error creating template:', error);
+    throw new Error(error.message);
+  }
   return data;
 };
 
@@ -133,7 +140,7 @@ const Templates = () => {
     const tagsArray = newTemplate.tags
       .split(',')
       .map(tag => tag.trim())
-      .filter(tag => tag) as string[]; // Explicitly cast to string[] to avoid undefined
+      .filter(tag => tag) as string[];
 
     createMutation.mutate({
       title: newTemplate.title,
