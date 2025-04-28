@@ -1,4 +1,4 @@
-import { Database } from '@/integrations/supabase/types'; // Import the Supabase types
+import { Database } from '@/integrations/supabase/types';
 
 export interface Contact {
   id: string;
@@ -15,6 +15,9 @@ export interface Message {
   role: 'user' | 'ai';
   content: string;
   timestamp: string;
+  ai_profile_id?: string;
+  template_id?: string;
+  training_data_id?: string; // Added
 }
 
 export interface AIProfile {
@@ -39,7 +42,7 @@ export interface ChatSession {
   status: 'open' | 'pending' | 'closed';
   last_activity: string;
   assigned_to: string | null;
-  contact?: Contact; // For joined data
+  contact?: Contact;
 }
 
 export interface Stats {
@@ -51,5 +54,4 @@ export interface Stats {
 
 export type TrainingData = Database['public']['Tables']['training_data']['Row'];
 
-// Re-export Supabase types for use elsewhere
 export type { Database };

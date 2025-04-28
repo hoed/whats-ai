@@ -20,6 +20,7 @@ type ChatSession = Database['public']['Tables']['chat_sessions']['Row'] & {
 };
 type AIProfile = Database['public']['Tables']['ai_profiles']['Row'];
 type Template = Database['public']['Tables']['templates']['Row'];
+type TrainingData = Database['public']['Tables']['training_data']['Row'];
 
 const ChatDetail = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -29,6 +30,7 @@ const ChatDetail = () => {
   const [newMessage, setNewMessage] = useState('');
   const [selectedAIProfile, setSelectedAIProfile] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTrainingData, setSelectedTrainingData] = useState<string | null>(null);
 
   // Fetch chat session
   const { data: session, isLoading: sessionLoading } = useQuery({
@@ -51,11 +53,20 @@ const ChatDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
-        .select('*')
+        .select(`
+          *,
+          ai_profile:ai_profiles(name),
+          template:templates(title),
+          training_data:training_data(title)
+        `)
         .eq('contact_id', session?.contact_id!)
         .order('timestamp', { ascending: true });
       if (error) throw new Error(error.message);
-      return data as Message[];
+      return data as (Message & {
+        ai_profile: { name: string } | null;
+        template: { title: string } | null;
+        training_data: { title: string } | null;
+      })[];
     },
     enabled: !!session?.contact_id,
   });
@@ -84,6 +95,18 @@ const ChatDetail = () => {
     },
   });
 
+  // Fetch training data
+  const { data: trainingData = [] } = useQuery({
+    queryKey: ['trainingData'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('training_data')
+        .select('*');
+      if (error) throw new Error(error.message);
+      return data as TrainingData[];
+    },
+  });
+
   // Mutation for sending a message
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -93,6 +116,7 @@ const ChatDetail = () => {
         content,
         ai_profile_id: selectedAIProfile || null,
         template_id: selectedTemplate || null,
+        training_data_id: selectedTrainingData || null, // Added
       };
       const { data, error } = await supabase
         .from('messages')
@@ -106,6 +130,7 @@ const ChatDetail = () => {
       queryClient.invalidateQueries({ queryKey: ['messages', sessionId] });
       setNewMessage('');
       setSelectedTemplate(null);
+      setSelectedTrainingData(null);
       toast({
         title: "Message Sent",
         description: "Your message has been sent successfully.",
@@ -130,6 +155,14 @@ const ChatDetail = () => {
     if (template) {
       setNewMessage(template.content);
       setSelectedTemplate(templateId);
+    }
+  };
+
+  const handleApplyTrainingData = (trainingDataId: string) => {
+    const training = trainingData.find(t => t.id === trainingDataId);
+    if (training) {
+      setNewMessage(training.content);
+      setSelectedTrainingData(trainingDataId);
     }
   };
 
@@ -227,9 +260,14 @@ const ChatDetail = () => {
                       }`}
                     >
                       <p>{message.content}</p>
-                      <p className="text-xs mt-1 opacity-70">
-                        {new Date(message.timestamp!).toLocaleTimeString()}
-                      </p>
+                      {message.role === 'ai' && (
+                        <div className="text-xs mt-1 opacity-70">
+                          {message.ai_profile && <span>Sent by {message.ai_profile.name} | </span>}
+                          {message.template && <span>Using template: {message.template.title} | </span>}
+                          {message.training_data && <span>Based on training: {message.training_data.title} | </span>}
+                          <span>{new Date(message.timestamp!).toLocaleTimeString()}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -263,6 +301,21 @@ const ChatDetail = () => {
                     {templates.map((template) => (
                       <SelectItem key={template.id} value={template.id}>
                         {template.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedTrainingData || ''}
+                  onValueChange={(value) => handleApplyTrainingData(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select Training Data" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {trainingData.map((training) => (
+                      <SelectItem key={training.id} value={training.id}>
+                        {training.title}
                       </SelectItem>
                     ))}
                   </SelectContent>
