@@ -20,16 +20,32 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
-type Contact = Database['public']['Tables']['contacts']['Row'];
+type Contact = Database['public']['Tables']['contacts']['Row'] & {
+  message_count?: number;
+  latest_session_status?: Database['public']['Enums']['session_status'];
+};
 
-// Fetch contacts from Supabase
+// Fetch contacts with related data from Supabase
 const fetchContacts = async (): Promise<Contact[]> => {
   const { data, error } = await supabase
     .from('contacts')
-    .select('*')
+    .select(`
+      *,
+      chat_sessions:chat_sessions!contact_id(
+        status
+      ),
+      messages:messages!contact_id(count)
+    `)
     .order('created_at', { ascending: false });
+
   if (error) throw new Error(error.message);
-  return data;
+
+  // Transform the data to include message count and latest session status
+  return data.map(contact => ({
+    ...contact,
+    message_count: contact.messages?.length > 0 ? contact.messages[0].count : 0,
+    latest_session_status: contact.chat_sessions?.length > 0 ? contact.chat_sessions[0].status : null,
+  }));
 };
 
 // Create a new contact
@@ -242,6 +258,16 @@ const Contacts = () => {
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   <div className="mb-2 text-sm">{contact.phone_number}</div>
+                  <div className="mb-2 text-sm">
+                    Messages: {contact.message_count || 0}
+                  </div>
+                  {contact.latest_session_status && (
+                    <div className="mb-2">
+                      <Badge variant="outline">
+                        Session: {contact.latest_session_status}
+                      </Badge>
+                    </div>
+                  )}
                   {contact.tags && contact.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
                       {contact.tags.map((tag, index) => (
