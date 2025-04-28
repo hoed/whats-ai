@@ -1,73 +1,189 @@
-# Welcome to your Lovable project
+# 📞 Talking AI Inbound Customer Service - WhatsApp Integration
 
-## Project info
+An AI-driven inbound customer service system for WhatsApp, powered by **OpenAI API** and **Supabase**.  
+This system automatically handles incoming WhatsApp messages, recognizes known and new contacts, replies intelligently, and provides a powerful admin dashboard for management and analytics.
 
-**URL**: https://lovable.dev/projects/3f7297c5-d423-4b33-bc4c-2d1b9d386791
+---
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+- **WhatsApp Integration** (via Twilio, Meta Cloud API, or custom gateway)
+- **AI Responses** powered by **OpenAI GPT-4** (or GPT-3.5)
+- **Contact Management** with auto-detection of new/existing numbers
+- **Contextual Conversation Memory** (based on recent chat history)
+- **Persona Switching** for different AI agent styles (Sales, Support, Formal, Friendly)
+- **Template Responses** with fallback for common queries
+- **Session Management** (open, pending, closed conversations)
+- **Real-Time Chat Updates** using Supabase subscriptions
+- **Admin Panel Dashboard** (React.js / Next.js) for monitoring and control
+- **Analytics and Reports** (sentiment analysis, response times, message volumes)
+- **Compliance and Security** (data encryption, audit logging)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3f7297c5-d423-4b33-bc4c-2d1b9d386791) and start prompting.
+## 🏗️ Architecture Overview
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```mermaid
+flowchart TD
+    A[WhatsApp Incoming Message] --> B[Webhook Server (Node.js / FastAPI)]
+    B --> C{Contact Exists?}
+    C -- Yes --> D[Fetch Chat History from Supabase]
+    C -- No --> E[Create New Contact in Supabase]
+    D --> F[Send Chat Context to OpenAI API]
+    E --> F[Send Initial Context to OpenAI API]
+    F --> G[Receive AI Response]
+    G --> H[Save Message to Supabase]
+    G --> I[Reply to WhatsApp API]
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛠️ Tech Stack
 
-**Use GitHub Codespaces**
+- **Backend**: Node.js / FastAPI
+- **Database**: Supabase (PostgreSQL + Realtime)
+- **AI Engine**: OpenAI (ChatGPT API)
+- **Messaging API**: WhatsApp Business API / Twilio / Meta Cloud
+- **Frontend Admin Panel**: Next.js / React.js
+- **Hosting**: Vercel / Railway / AWS
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🗂️ Database Schema (Supabase)
 
-This project is built with:
+### Contacts Table (`contacts`)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Unique contact ID |
+| phone_number | String | WhatsApp number |
+| name | String | Contact name |
+| tags | Array of String | Customer tags |
+| created_at | Timestamp | Creation date |
+| updated_at | Timestamp | Last update |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Messages Table (`messages`)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Unique message ID |
+| contact_id | UUID (FK) | Reference to contact |
+| role | Enum ('user', 'ai') | Message sender |
+| content | Text | Message body |
+| timestamp | Timestamp | Sent time |
 
-## How can I deploy this project?
+### AI Profiles (`ai_profiles`)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Unique profile ID |
+| name | String | Profile name |
+| description | Text | Personality description |
+| prompt_system | Text | System prompt for OpenAI |
 
-Simply open [Lovable](https://lovable.dev/projects/3f7297c5-d423-4b33-bc4c-2d1b9d386791) and click on Share -> Publish.
+### Templates (`templates`)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Unique template ID |
+| title | String | Template title |
+| content | Text | Template content |
+| tags | Array of String | Tags for classification |
 
-## Can I connect a custom domain to my Lovable project?
+### Chat Sessions (`chat_sessions`)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Unique session ID |
+| contact_id | UUID (FK) | Reference to contact |
+| status | Enum ('open', 'pending', 'closed') | Session status |
+| last_activity | Timestamp | Last active timestamp |
+| assigned_to | String (nullable) | Assigned agent name |
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## ⚙️ Setup Instructions
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+   or
+   ```bash
+   pip install -r requirements.txt
+   ```
+   (depending on Node.js or FastAPI setup)
+
+3. **Create `.env` file** with your credentials:
+   ```
+   OPENAI_API_KEY=your-openai-key
+   SUPABASE_URL=your-supabase-url
+   SUPABASE_ANON_KEY=your-supabase-anon-key
+   WHATSAPP_API_TOKEN=your-whatsapp-token
+   ```
+
+4. **Run the server**
+   ```bash
+   npm run dev
+   ```
+   or
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+
+5. **Deploy** to Vercel / Railway / your preferred platform.
+
+---
+
+## 📊 Admin Panel
+
+- Manage contacts and sessions.
+- Monitor conversation statistics.
+- Update AI settings and personas.
+- View and edit message templates.
+
+(Admin Panel setup instructions in `/frontend` folder.)
+
+---
+
+## 📋 Roadmap
+
+- [x] WhatsApp Integration
+- [x] Supabase Database
+- [x] AI-Powered Messaging
+- [ ] Human Agent Escalation
+- [ ] Multi-language Support
+- [ ] CRM / Ticketing System Integration
+- [ ] Voice Message Handling
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!  
+Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 🛡️ License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🔥 Acknowledgements
+
+- [OpenAI](https://openai.com/)
+- [Supabase](https://supabase.com/)
+- [Twilio WhatsApp API](https://www.twilio.com/whatsapp)
+- [Meta Cloud API](https://developers.facebook.com/docs/whatsapp)
+
+---
+
+---
+
+Kalau mau, saya juga bisa buatkan sekalian:
+- Struktur folder (backend + frontend)
+- Template file `CONTRIBUTING.md` + `LICENSE`
+- CI/CD pipeline contoh (Vercel + Railway auto deploy)
