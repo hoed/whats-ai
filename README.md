@@ -23,7 +23,6 @@ This system automatically handles incoming WhatsApp messages, recognizes known a
 
 ## 🏗️ Architecture Overview
 
-```mermaid
 flowchart TD
     A[WhatsApp Incoming Message] --> B[Webhook Server (Node.js / FastAPI)]
     B --> C{Contact Exists?}
@@ -34,7 +33,6 @@ flowchart TD
     F --> G[Receive AI Response]
     G --> H[Save Message to Supabase]
     G --> I[Reply to WhatsApp API]
-```
 
 ---
 
@@ -109,11 +107,6 @@ flowchart TD
    ```bash
    npm install
    ```
-   or
-   ```bash
-   pip install -r requirements.txt
-   ```
-   (depending on Node.js or FastAPI setup)
 
 3. **Create `.env` file** with your credentials:
    ```
@@ -179,10 +172,3 @@ This project is licensed under the [MIT License](LICENSE).
 - [Twilio WhatsApp API](https://www.twilio.com/whatsapp)
 - [Meta Cloud API](https://developers.facebook.com/docs/whatsapp)
 
-
----
-
-Kalau mau, saya juga bisa buatkan sekalian:
-- Struktur folder (backend + frontend)
-- Template file `CONTRIBUTING.md` + `LICENSE`
-- CI/CD pipeline contoh (Vercel + Railway auto deploy)
