@@ -179,7 +179,6 @@ This project is licensed under the [MIT License](LICENSE).
 - [Twilio WhatsApp API](https://www.twilio.com/whatsapp)
 - [Meta Cloud API](https://developers.facebook.com/docs/whatsapp)
 
----
 
 ---
 
