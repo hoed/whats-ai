@@ -1,258 +1,294 @@
-
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import ChatInterface from '@/components/chat/ChatInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { MessageCircle, Clock, CheckCircle, X, UserCheck, Tag } from 'lucide-react';
-import { 
-  fetchMessages, 
-  fetchChatSessions,
-  fetchAIProfiles,
-  fetchTemplates,
-  fetchContacts,
-  sendMessage,
-  updateChatSessionStatus
-} from '@/services/mockData';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type Message = Database['public']['Tables']['messages']['Row'];
+type ChatSession = Database['public']['Tables']['chat_sessions']['Row'] & {
+  contact: Database['public']['Tables']['contacts']['Row'];
+};
+type AIProfile = Database['public']['Tables']['ai_profiles']['Row'];
+type Template = Database['public']['Tables']['templates']['Row'];
 
 const ChatDetail = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedAIProfile, setSelectedAIProfile] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
-  // Queries
-  const { 
-    data: messages = [], 
-    isLoading: isLoadingMessages,
-    refetch: refetchMessages
-  } = useQuery({
+  // Fetch chat session
+  const { data: session, isLoading: sessionLoading } = useQuery({
+    queryKey: ['chatSession', sessionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('chat_sessions')
+        .select('*, contact:contacts(*)')
+        .eq('id', sessionId!)
+        .single();
+      if (error) throw new Error(error.message);
+      return data as ChatSession;
+    },
+    enabled: !!sessionId,
+  });
+
+  // Fetch messages
+  const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['messages', sessionId],
-    queryFn: () => sessionId ? fetchMessages(sessionId) : Promise.resolve([]),
-    enabled: !!sessionId
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('contact_id', session?.contact_id!)
+        .order('timestamp', { ascending: true });
+      if (error) throw new Error(error.message);
+      return data as Message[];
+    },
+    enabled: !!session?.contact_id,
   });
-  
-  const { 
-    data: sessions = [],
-    isLoading: isLoadingSessions
-  } = useQuery({
-    queryKey: ['chatSessions'],
-    queryFn: fetchChatSessions
-  });
-  
-  const {
-    data: contacts = [],
-    isLoading: isLoadingContacts
-  } = useQuery({
-    queryKey: ['contacts'],
-    queryFn: fetchContacts
-  });
-  
-  const {
-    data: aiProfiles = [],
-    isLoading: isLoadingAIProfiles
-  } = useQuery({
+
+  // Fetch AI profiles
+  const { data: aiProfiles = [] } = useQuery({
     queryKey: ['aiProfiles'],
-    queryFn: fetchAIProfiles
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_profiles')
+        .select('*');
+      if (error) throw new Error(error.message);
+      return data as AIProfile[];
+    },
   });
-  
-  const {
-    data: templates = [],
-    isLoading: isLoadingTemplates
-  } = useQuery({
+
+  // Fetch templates
+  const { data: templates = [] } = useQuery({
     queryKey: ['templates'],
-    queryFn: fetchTemplates
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('templates')
+        .select('*');
+      if (error) throw new Error(error.message);
+      return data as Template[];
+    },
   });
 
-  // Find the current session
-  const currentSession = sessions.find(session => session.id === sessionId);
-  
-  // Find the contact for this session
-  const contact = contacts.find(contact => 
-    contact.id === currentSession?.contact_id
-  );
-  
-  const handleSendMessage = async (message: string) => {
-    if (!sessionId) return;
-    
-    try {
-      await sendMessage(sessionId, message);
-      // Re-fetch messages after sending
-      setTimeout(() => {
-        refetchMessages();
-      }, 1500);
-    } catch (error) {
-      console.error('Error sending message:', error);
+  // Mutation for sending a message
+  const sendMessageMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const newMessage: Omit<Message, 'id' | 'timestamp'> = {
+        contact_id: session!.contact_id,
+        role: 'ai',
+        content,
+        ai_profile_id: selectedAIProfile || null,
+        template_id: selectedTemplate || null,
+      };
+      const { data, error } = await supabase
+        .from('messages')
+        .insert([newMessage])
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', sessionId] });
+      setNewMessage('');
+      setSelectedTemplate(null);
+      toast({
+        title: "Message Sent",
+        description: "Your message has been sent successfully.",
+      });
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to send message",
+        description: error.message,
         variant: "destructive",
       });
-    }
-  };
-  
-  const handleChangeStatus = async (status: 'open' | 'pending' | 'closed') => {
-    if (!sessionId) return;
-    
-    try {
-      await updateChatSessionStatus(sessionId, status);
-      toast({
-        title: "Status updated",
-        description: `Conversation status changed to ${status}`,
-      });
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update conversation status",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  const handleChangeAIProfile = (profileId: string) => {
-    console.log('Changed AI Profile to:', profileId);
-    // In a real implementation, this would update the AI profile in the database
+    },
+  });
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return;
+    sendMessageMutation.mutate(newMessage);
   };
 
-  // Loading states
-  const isLoading = isLoadingMessages || isLoadingSessions || isLoadingContacts || 
-                    isLoadingAIProfiles || isLoadingTemplates;
-  
-  // Get status badge
-  const getStatusBadge = (status?: 'open' | 'pending' | 'closed') => {
-    switch (status) {
-      case 'open':
-        return <Badge className="bg-green-500">Active</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-500 border-amber-500">Pending</Badge>;
-      case 'closed':
-        return <Badge variant="secondary">Closed</Badge>;
-      default:
-        return null;
+  const handleApplyTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setNewMessage(template.content);
+      setSelectedTemplate(templateId);
     }
   };
+
+  if (sessionLoading || messagesLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center items-center h-full">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <DashboardLayout>
+        <div className="text-center p-8">
+          <h2 className="text-lg font-medium">Chat session not found</h2>
+          <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
+            Back to Chats
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      <div className="flex h-[calc(100vh-8rem)] gap-4">
-        {/* Chat Interface */}
-        <div className="flex-grow">
-          <ChatInterface
-            contact={contact}
-            messages={messages}
-            aiProfiles={aiProfiles}
-            templates={templates}
-            isLoading={isLoading}
-            onSendMessage={handleSendMessage}
-            onChangeAIProfile={handleChangeAIProfile}
-          />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold">{session.contact.name}</h1>
+              <p className="text-sm text-gray-500">{session.contact.phone_number}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge variant="outline">{session.status}</Badge>
+            <Select
+              value={session.status}
+              onValueChange={async (value: 'open' | 'pending' | 'closed') => {
+                const { error } = await supabase
+                  .from('chat_sessions')
+                  .update({ status: value })
+                  .eq('id', sessionId!);
+                if (error) {
+                  toast({
+                    title: "Error",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                } else {
+                  queryClient.invalidateQueries({ queryKey: ['chatSession', sessionId] });
+                }
+              }}
+            >
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        
-        {/* Contact Details Sidebar */}
-        <div className="w-72">
-          <Card className="h-full">
-            <CardHeader className="px-4 py-3">
-              <CardTitle className="text-base">Conversation Info</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 py-2">
-              {isLoading ? (
-                <div className="space-y-3">
-                  <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm text-gray-500 mb-1">Status</h3>
-                    <div className="flex space-x-2">
-                      {getStatusBadge(currentSession?.status)}
-                      
-                      <div className="flex-grow"></div>
-                      
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="h-6 text-xs px-2"
-                        onClick={() => handleChangeStatus('open')}
-                      >
-                        <MessageCircle className="h-3 w-3 mr-1" />
-                        Active
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="h-6 text-xs px-2"
-                        onClick={() => handleChangeStatus('closed')}
-                      >
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Close
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="text-sm text-gray-500 mb-1">Customer</h3>
-                    <div className="text-sm">{contact?.name || 'Unknown'}</div>
-                    <div className="text-xs text-gray-500">{contact?.phone_number}</div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {contact?.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                      ))}
-                      <Button variant="ghost" size="icon" className="h-5 w-5">
-                        <Tag className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="text-sm text-gray-500 mb-1">AI Assignment</h3>
-                    <div className="flex items-center">
-                      <span className="text-sm">Auto-assigned to AI</span>
-                      <div className="ml-1 h-2 w-2 rounded-full bg-green-500"></div>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full mt-2 text-xs"
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Messages</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[400px] pr-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === 'ai' ? 'justify-end' : 'justify-start'} mb-4`}
+                >
+                  <div
+                    className={`flex items-start space-x-2 max-w-[70%] ${
+                      message.role === 'ai' ? 'flex-row-reverse space-x-reverse' : ''
+                    }`}
+                  >
+                    <Avatar>
+                      <AvatarImage src={message.role === 'ai' ? '/ai-avatar.png' : '/user-avatar.png'} />
+                      <AvatarFallback>{message.role === 'ai' ? 'AI' : 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div
+                      className={`rounded-lg p-3 ${
+                        message.role === 'ai' ? 'bg-primary text-primary-foreground' : 'bg-gray-200'
+                      }`}
                     >
-                      <UserCheck className="h-3 w-3 mr-1" />
-                      Assign to Human Agent
-                    </Button>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="text-sm text-gray-500 mb-1">Activity</h3>
-                    <div className="text-xs">
-                      <div className="flex justify-between items-center py-1">
-                        <span>First contact</span>
-                        <span className="text-gray-500">2 days ago</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1">
-                        <span>Messages exchanged</span>
-                        <span className="font-medium">{messages.length}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1">
-                        <span>Last activity</span>
-                        <span className="text-gray-500">Just now</span>
-                      </div>
+                      <p>{message.content}</p>
+                      <p className="text-xs mt-1 opacity-70">
+                        {new Date(message.timestamp!).toLocaleTimeString()}
+                      </p>
                     </div>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              ))}
+            </ScrollArea>
+            <div className="flex flex-col space-y-2 mt-4">
+              <div className="flex space-x-2">
+                <Select
+                  value={selectedAIProfile || ''}
+                  onValueChange={(value) => setSelectedAIProfile(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select AI Profile" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {aiProfiles.map((profile) => (
+                      <SelectItem key={profile.id} value={profile.id}>
+                        {profile.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedTemplate || ''}
+                  onValueChange={(value) => handleApplyTemplate(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Select Template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        {template.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Type a message..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={sendMessageMutation.isPending || !newMessage.trim()}
+                >
+                  {sendMessageMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
