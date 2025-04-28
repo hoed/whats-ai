@@ -33,7 +33,7 @@ const ChatDetail = () => {
   const [selectedTrainingData, setSelectedTrainingData] = useState<string | null>(null);
 
   // Fetch chat session
-  const { data: session, isLoading: sessionLoading } = useQuery({
+  const { data: session, isLoading: sessionLoading, error: sessionError } = useQuery({
     queryKey: ['chatSession', sessionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,7 +48,7 @@ const ChatDetail = () => {
   });
 
   // Fetch messages
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery({
     queryKey: ['messages', sessionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -72,7 +72,7 @@ const ChatDetail = () => {
   });
 
   // Fetch AI profiles
-  const { data: aiProfiles = [] } = useQuery({
+  const { data: aiProfiles = [], error: aiProfilesError } = useQuery({
     queryKey: ['aiProfiles'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -84,7 +84,7 @@ const ChatDetail = () => {
   });
 
   // Fetch templates
-  const { data: templates = [] } = useQuery({
+  const { data: templates = [], error: templatesError } = useQuery({
     queryKey: ['templates'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -96,7 +96,7 @@ const ChatDetail = () => {
   });
 
   // Fetch training data
-  const { data: trainingData = [] } = useQuery({
+  const { data: trainingData = [], error: trainingDataError } = useQuery({
     queryKey: ['trainingData'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -110,17 +110,17 @@ const ChatDetail = () => {
   // Mutation for sending a message
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const newMessage: Omit<Message, 'id' | 'timestamp'> = {
+      const newMessageData: Omit<Message, 'id' | 'timestamp'> = {
         contact_id: session!.contact_id,
         role: 'ai',
         content,
         ai_profile_id: selectedAIProfile || null,
         template_id: selectedTemplate || null,
-        training_data_id: selectedTrainingData || null, // Added
+        training_data_id: selectedTrainingData || null,
       };
       const { data, error } = await supabase
         .from('messages')
-        .insert([newMessage])
+        .insert([newMessageData])
         .select()
         .single();
       if (error) throw new Error(error.message);
@@ -171,6 +171,22 @@ const ChatDetail = () => {
       <DashboardLayout>
         <div className="flex justify-center items-center h-full">
           <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (sessionError || messagesError || aiProfilesError || templatesError || trainingDataError) {
+    return (
+      <DashboardLayout>
+        <div className="text-center p-8">
+          <h2 className="text-lg font-medium">Error loading chat data</h2>
+          <p className="text-red-500">
+            {sessionError?.message || messagesError?.message || aiProfilesError?.message || templatesError?.message || trainingDataError?.message}
+          </p>
+          <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
+            Back to Chats
+          </Button>
         </div>
       </DashboardLayout>
     );

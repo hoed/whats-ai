@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,19 +17,67 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Plus, Star, Edit, Trash, Copy } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { fetchAIProfiles } from '@/services/mockData';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type AIProfile = Database['public']['Tables']['ai_profiles']['Row'];
+
+// Fetch AI profiles from Supabase
+const fetchAIProfiles = async (): Promise<AIProfile[]> => {
+  const { data, error } = await supabase
+    .from('ai_profiles')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+// Create a new AI profile
+const createAIProfile = async (newProfile: Omit<AIProfile, 'id' | 'created_at'>) => {
+  const { data, error } = await supabase
+    .from('ai_profiles')
+    .insert([newProfile])
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 const AIProfiles = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-  
+  const queryClient = useQueryClient();
+
+  // Fetch AI profiles
   const { 
     data: aiProfiles = [], 
-    isLoading
+    isLoading,
+    error
   } = useQuery({
     queryKey: ['aiProfiles'],
-    queryFn: fetchAIProfiles
+    queryFn: fetchAIProfiles,
+  });
+
+  // Mutation for creating an AI profile
+  const createMutation = useMutation({
+    mutationFn: createAIProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aiProfiles'] });
+      toast({
+        title: "AI Profile Created",
+        description: "New AI profile has been created successfully",
+      });
+      setIsDialogOpen(false);
+      setNewProfile({ name: '', description: '', prompt_system: '' });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   // Filter profiles based on search query
@@ -47,7 +94,7 @@ const AIProfiles = () => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -64,13 +111,20 @@ const AIProfiles = () => {
   });
 
   const handleCreateProfile = () => {
-    // In a real implementation, this would save to Supabase
-    toast({
-      title: "AI Profile created",
-      description: "New AI profile has been created successfully",
+    if (!newProfile.name || !newProfile.prompt_system) {
+      toast({
+        title: "Error",
+        description: "Name and system prompt are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createMutation.mutate({
+      name: newProfile.name,
+      description: newProfile.description,
+      prompt_system: newProfile.prompt_system,
     });
-    setIsDialogOpen(false);
-    setNewProfile({ name: '', description: '', prompt_system: '' });
   };
 
   return (
@@ -124,7 +178,9 @@ const AIProfiles = () => {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreateProfile}>Create Profile</Button>
+                <Button onClick={handleCreateProfile} disabled={createMutation.isPending}>
+                  {createMutation.isPending ? "Creating..." : "Create Profile"}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -156,6 +212,10 @@ const AIProfiles = () => {
               </Card>
             ))}
           </div>
+        ) : error ? (
+          <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
+            <p className="text-red-500">Error loading AI profiles: {(error as Error).message}</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredProfiles.map((profile) => (
@@ -185,7 +245,7 @@ const AIProfiles = () => {
                     {profile.prompt_system}
                   </div>
                   <div className="text-xs text-gray-500">
-                    Created {formatDate(profile.created_at)}
+                    Created {formatDate(profile.created_at!)}
                   </div>
                 </CardContent>
               </Card>

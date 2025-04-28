@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Template } from '@/types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,19 +18,67 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Plus, Tag, Edit, Trash, Copy, FileText } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { fetchTemplates } from '@/services/mockData';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type Template = Database['public']['Tables']['templates']['Row'];
+
+// Fetch templates from Supabase
+const fetchTemplates = async (): Promise<Template[]> => {
+  const { data, error } = await supabase
+    .from('templates')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+// Create a new template
+const createTemplate = async (newTemplate: Omit<Template, 'id' | 'created_at'>) => {
+  const { data, error } = await supabase
+    .from('templates')
+    .insert([newTemplate])
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 const Templates = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-  
+  const queryClient = useQueryClient();
+
+  // Fetch templates
   const { 
     data: templates = [], 
-    isLoading
+    isLoading,
+    error
   } = useQuery({
     queryKey: ['templates'],
-    queryFn: fetchTemplates
+    queryFn: fetchTemplates,
+  });
+
+  // Mutation for creating a template
+  const createMutation = useMutation({
+    mutationFn: createTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      toast({
+        title: "Template Created",
+        description: "New template has been created successfully",
+      });
+      setIsDialogOpen(false);
+      setNewTemplate({ title: '', content: '', tags: '' });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   // Filter templates based on search query
@@ -41,7 +87,7 @@ const Templates = () => {
     return (
       template.title.toLowerCase().includes(searchLower) ||
       template.content.toLowerCase().includes(searchLower) ||
-      template.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      (template.tags && template.tags.some(tag => tag.toLowerCase().includes(searchLower)))
     );
   });
 
@@ -49,7 +95,7 @@ const Templates = () => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -67,7 +113,7 @@ const Templates = () => {
   const [newTemplate, setNewTemplate] = useState<{
     title: string;
     content: string;
-    tags: string;
+    tags: string; // This is a string for the input field
   }>({
     title: '',
     content: '',
@@ -75,13 +121,25 @@ const Templates = () => {
   });
 
   const handleCreateTemplate = () => {
-    // In a real implementation, this would save to Supabase
-    toast({
-      title: "Template created",
-      description: "New template has been created successfully",
+    if (!newTemplate.title || !newTemplate.content) {
+      toast({
+        title: "Error",
+        description: "Title and content are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const tagsArray = newTemplate.tags
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(tag => tag) as string[]; // Explicitly cast to string[] to avoid undefined
+
+    createMutation.mutate({
+      title: newTemplate.title,
+      content: newTemplate.content,
+      tags: tagsArray,
     });
-    setIsDialogOpen(false);
-    setNewTemplate({ title: '', content: '', tags: '' });
   };
 
   return (
@@ -136,7 +194,9 @@ const Templates = () => {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreateTemplate}>Create Template</Button>
+                <Button onClick={handleCreateTemplate} disabled={createMutation.isPending}>
+                  {createMutation.isPending ? "Creating..." : "Create Template"}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -172,6 +232,10 @@ const Templates = () => {
               </Card>
             ))}
           </div>
+        ) : error ? (
+          <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
+            <p className="text-red-500">Error loading templates: {(error as Error).message}</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTemplates.map((template) => (
@@ -197,15 +261,17 @@ const Templates = () => {
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   <div className="mb-3 text-sm line-clamp-3">{template.content}</div>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {template.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
+                  {template.tags && template.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {template.tags.map((tag, index) => (
+                        <Badge key={`${tag}-${index}`} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   <div className="text-xs text-gray-500">
-                    Created {formatDate(template.created_at)}
+                    Created {formatDate(template.created_at!)}
                   </div>
                 </CardContent>
               </Card>

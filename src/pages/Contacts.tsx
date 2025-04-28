@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Search, Plus, Loader2, MessageCircle } from 'lucide-react';
+import { Search, Plus, Loader2, MessageCircle, MessageSquare } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
@@ -23,6 +24,7 @@ import { Database } from '@/integrations/supabase/types';
 type Contact = Database['public']['Tables']['contacts']['Row'] & {
   message_count?: number;
   latest_session_status?: Database['public']['Enums']['session_status'];
+  latest_session_id?: string;
 };
 
 // Fetch contacts with related data from Supabase
@@ -32,6 +34,7 @@ const fetchContacts = async (): Promise<Contact[]> => {
     .select(`
       *,
       chat_sessions:chat_sessions!contact_id(
+        id,
         status
       ),
       messages:messages!contact_id(count)
@@ -40,11 +43,12 @@ const fetchContacts = async (): Promise<Contact[]> => {
 
   if (error) throw new Error(error.message);
 
-  // Transform the data to include message count and latest session status
+  // Transform the data to include message count, latest session status, and session ID
   return data.map(contact => ({
     ...contact,
     message_count: contact.messages?.length > 0 ? contact.messages[0].count : 0,
     latest_session_status: contact.chat_sessions?.length > 0 ? contact.chat_sessions[0].status : null,
+    latest_session_id: contact.chat_sessions?.length > 0 ? contact.chat_sessions[0].id : null,
   }));
 };
 
@@ -64,6 +68,7 @@ const Contacts = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetch contacts
   const { data: contacts = [], isLoading, error } = useQuery({
@@ -280,21 +285,33 @@ const Contacts = () => {
                   <div className="text-xs text-gray-500 mb-2">
                     Created {formatDate(contact.created_at!)}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                  >
-                    <a
-                      href={generateWhatsAppLink(contact.phone_number)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center"
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
                     >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Chat on WhatsApp
-                    </a>
-                  </Button>
+                      <a
+                        href={generateWhatsAppLink(contact.phone_number)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Chat on WhatsApp
+                      </a>
+                    </Button>
+                    {contact.latest_session_id && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/chat/${contact.latest_session_id}`)}
+                      >
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        View Chat
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
