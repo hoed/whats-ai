@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,10 +8,11 @@ import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
 import Templates from "./pages/Templates";
 import AIProfiles from "./pages/AIProfiles";
-import ChatDetail from "./pages/ChatDetail";
+import ChatDetail from "./pages/ChatDetail"; // Fixed the import
 import Settings from "./pages/Settings";
 import SetupWhatsApp from "./pages/SetupWhatsApp";
 import Analytics from "./pages/Analytics";
+import Training from "./pages/Training";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +33,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/training" element={<Training />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

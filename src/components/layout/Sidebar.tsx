@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,8 @@ import {
   Database,
   Settings,
   BarChart2,
-  Star
+  Star,
+  BookOpen // Added new icon for Training
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -23,6 +23,7 @@ const Sidebar: React.FC = () => {
     { label: 'Contacts', icon: <Users size={20} />, path: '/contacts' },
     { label: 'Templates', icon: <FileText size={20} />, path: '/templates' },
     { label: 'AI Profiles', icon: <Star size={20} />, path: '/ai-profiles' },
+    { label: 'Training', icon: <BookOpen size={20} />, path: '/training' }, // Added Training menu item
     { label: 'Analytics', icon: <BarChart2 size={20} />, path: '/analytics' },
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];

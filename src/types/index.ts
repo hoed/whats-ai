@@ -1,3 +1,4 @@
+import { Database } from '@/integrations/supabase/types'; // Import the Supabase types
 
 export interface Contact {
   id: string;
@@ -47,3 +48,8 @@ export interface Stats {
   resolved_conversations: number;
   new_contacts_today: number;
 }
+
+export type TrainingData = Database['public']['Tables']['training_data']['Row'];
+
+// Re-export Supabase types for use elsewhere
+export type { Database };
