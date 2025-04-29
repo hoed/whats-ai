@@ -11,7 +11,7 @@ import {
   Star,
   BookOpen,
   X,
-  Book
+  BookMarked
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'AI Profiles', icon: <Star size={20} />, path: '/ai-profiles' },
     { label: 'Training', icon: <BookOpen size={20} />, path: '/training' },
     { label: 'Analytics', icon: <BarChart2 size={20} />, path: '/analytics' },
-    { label: 'Manual', icon: <Book size={20} />, path: '/manual' },
+    { label: 'Manual', icon: <BookMarked size={20} />, path: '/manual' },
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
   
