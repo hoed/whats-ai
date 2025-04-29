@@ -1,11 +1,9 @@
-
-import { ToastProvider } from "@/hooks/use-toast"
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
   ToastClose,
   ToastDescription,
-  ToastProvider as RadixToastProvider,
+  ToastProvider,
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast"
@@ -14,7 +12,7 @@ export function Toaster() {
   const { toasts } = useToast()
 
   return (
-    <RadixToastProvider>
+    <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
@@ -30,6 +28,6 @@ export function Toaster() {
         )
       })}
       <ToastViewport />
-    </RadixToastProvider>
+    </ToastProvider>
   )
 }
