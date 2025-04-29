@@ -14,7 +14,7 @@ const NotFound = () => {
         <p className="text-gray-500 mb-8">
           The page might be temporarily unavailable, moved, or no longer exist.
         </p>
-        <Button onClick={() => navigate('/')} size="lg">
+        <Button onClick={() => navigate('/dashboard')} size="lg">
           Back to Dashboard
         </Button>
       </div>
