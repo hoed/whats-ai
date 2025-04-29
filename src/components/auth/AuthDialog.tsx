@@ -68,18 +68,18 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-[90vw] sm:max-w-md p-4 sm:p-6 bg-gray-900/80 border border-gray-600 backdrop-blur-sm text-gray-100">
+      <DialogContent className="w-full max-w-[72vw] sm:max-w-[360px] p-3 sm:p-4 bg-gray-900/80 border border-gray-600 backdrop-blur-sm text-gray-100">
         <DialogHeader>
-          <DialogTitle className="text-2xl sm:text-3xl">
+          <DialogTitle className="text-xl sm:text-2xl">
             {isLogin ? 'Login' : 'Sign Up'}
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-xs text-gray-400">
             {isLogin ? 'Welcome back!' : 'Create a new account'}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-100">Email</Label>
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs text-gray-100">Email</Label>
             <div className="relative">
               <Input
                 id="email"
@@ -88,13 +88,13 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 text-xs py-1.5"
               />
-              <User className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <User className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-100">Password</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-xs text-gray-100">Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -103,25 +103,25 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 text-xs py-1.5"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
+                  <EyeOff className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
+                  <Eye className="h-4 w-4 text-gray-400" />
                 )}
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col gap-2 sm:gap-3">
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs py-1.5"
             >
               {isLogin ? 'Login' : 'Sign Up'}
             </Button>
@@ -129,7 +129,7 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
               type="button"
               variant="outline"
               onClick={() => setIsLogin(!isLogin)}
-              className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+              className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 text-xs py-1.5"
             >
               {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Login'}
             </Button>
