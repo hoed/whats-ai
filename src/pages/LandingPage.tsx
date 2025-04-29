@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageCircle, Bot, PieChart, ArrowRight } from 'lucide-react';
+import { Phone, MessageCircle, Bot, PieChart } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LandingPage = () => {
-  const navigate = useNavigate();
+  const { setShowAuthDialog } = useAuth();
   
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
@@ -44,7 +45,7 @@ const LandingPage = () => {
           <Link to="/auth" className="text-sm text-gray-300 hover:text-white transition">Masuk</Link>
           <Button 
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
-            onClick={() => navigate('/auth')}
+            onClick={() => setShowAuthDialog(true)}
           >
             Mulai Sekarang
           </Button>
@@ -65,7 +66,10 @@ const LandingPage = () => {
                 Integrasikan WhatsApp dengan AI secara mulus untuk memberikan pengalaman pelanggan yang luar biasa, respons cepat, dan membangun hubungan jangka panjang.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg">
+                <Button 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg"
+                  onClick={() => setShowAuthDialog(true)}
+                >
                   Mulai Uji Coba Gratis
                 </Button>
               </div>
@@ -198,7 +202,10 @@ const LandingPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold mb-4">Siap mengubah layanan pelanggan Anda?</h2>
                   <p className="text-gray-400 mb-6">Mulai bangun hubungan pelanggan yang lebih kuat dengan percakapan berbasis AI hari ini.</p>
-                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg">
+                  <Button 
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg"
+                    onClick={() => setShowAuthDialog(true)}
+                  >
                     Mulai Sekarang
                   </Button>
                 </div>
