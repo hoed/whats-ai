@@ -42,12 +42,12 @@ const LandingPage = () => {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/auth" className="text-sm text-gray-300 hover:text-white transition">Masuk</Link>
+          <Link to="/auth" className="text-sm text-gray-300 hover:text-white transition">Login</Link>
           <Button 
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
             onClick={() => navigate('/auth')}
           >
-            Mulai Sekarang
+            Get Started
           </Button>
         </div>
       </header>
@@ -58,34 +58,34 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-5xl font-bold leading-tight">
-                <span className="block">Layanan</span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Pelanggan AI</span>
-                <span className="block">Mutakhir</span>
+                <span className="block">Advanced</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">AI-Powered</span>
+                <span className="block">Customer Service</span>
               </h2>
               <p className="text-xl text-gray-400 max-w-lg">
-                Integrasikan WhatsApp dengan AI untuk memberikan pengalaman pelanggan yang luar biasa, terasa manusiawi, responsif secara instan, dan membangun hubungan jangka panjang.
+                Seamlessly integrate WhatsApp with AI to deliver exceptional customer experiences that feel human, respond instantly, and build lasting relationships.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg">
-                  Coba Gratis
+                  Start Free Trial
                 </Button>
                 <Button variant="outline" className="rounded-full px-8 py-6 border-gray-700 hover:border-gray-500 text-lg">
-                  Lihat Demo <ArrowRight className="ml-2 h-5 w-5" />
+                  Watch Demo <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
               
               <div className="flex gap-8 pt-8">
                 <div>
                   <p className="text-3xl font-bold text-blue-400">98%</p>
-                  <p className="text-sm text-gray-400">Kepuasan pelanggan</p>
+                  <p className="text-sm text-gray-400">Customer satisfaction</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-blue-400">24/7</p>
-                  <p className="text-sm text-gray-400">Layanan pelanggan</p>
+                  <p className="text-sm text-gray-400">Customer support</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-blue-400">5min</p>
-                  <p className="text-sm text-gray-400">Waktu setup rata-rata</p>
+                  <p className="text-sm text-gray-400">Average setup time</p>
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ const LandingPage = () => {
                   <div className="flex gap-4 items-start">
                     <div className="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0"></div>
                     <div className="bg-gray-800 rounded-2xl rounded-tl-none p-3 text-sm">
-                      Hai! Saya punya masalah dengan pesanan #45678. Bisakah Anda membantu?
+                      Hi! I'm having issues with my recent order #45678. Can you help?
                     </div>
                   </div>
                   
@@ -112,14 +112,14 @@ const LandingPage = () => {
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="bg-gradient-to-r from-blue-600/50 to-purple-600/50 backdrop-blur-sm rounded-2xl rounded-tr-none p-3 text-sm">
-                      Halo! Maaf mendengar tentang masalah dengan pesanan #45678. Saya melihat bahwa paket Anda sedang dalam pengiriman dan dijadwalkan tiba besok. Apakah Anda ingin saya mengirimkan tautan pelacakan?
+                      Hi there! I'm sorry to hear about the issue with your order #45678. I can see that your package is currently in transit and scheduled for delivery tomorrow. Would you like me to send you the tracking link?
                     </div>
                   </div>
                   
                   <div className="flex gap-4 items-start">
                     <div className="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0"></div>
                     <div className="bg-gray-800 rounded-2xl rounded-tl-none p-3 text-sm">
-                      Ya, tolong! Itu akan sangat membantu.
+                      Yes, please! That would be helpful.
                     </div>
                   </div>
                   
@@ -128,8 +128,8 @@ const LandingPage = () => {
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="bg-gradient-to-r from-blue-600/50 to-purple-600/50 backdrop-blur-sm rounded-2xl rounded-tr-none p-3 text-sm">
-                      Berikut tautan pelacakan Anda: https://track.delivery/85f4e2
-                      <br /><br />Ada hal lain yang bisa saya bantu hari ini?
+                      Here's your tracking link: https://track.delivery/85f4e2
+                      <br /><br />Is there anything else I can help you with today?
                     </div>
                   </div>
                 </div>
@@ -146,42 +146,42 @@ const LandingPage = () => {
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-4">
-              Masa Depan Layanan Pelanggan
+              Future of Customer Support
             </h2>
-            <p className="text-gray-400">Integrasi WhatsApp berbasis AI kami memberikan layanan pelanggan yang personal, cerdas, dan skalabel sesuai dengan pertumbuhan bisnis Anda.</p>
+            <p className="text-gray-400">Our AI-powered WhatsApp integration delivers personalized, intelligent customer service that scales with your business.</p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
                 icon: <Phone className="h-8 w-8 text-blue-400" />,
-                title: "Integrasi WhatsApp",
-                description: "Terhubung langsung dengan pelanggan melalui platform pesan favorit mereka tanpa aplikasi tambahan."
+                title: "WhatsApp Integration",
+                description: "Connect directly with customers on their preferred messaging platform without any additional apps or software."
               },
               {
                 icon: <Bot className="h-8 w-8 text-indigo-400" />,
-                title: "Profil AI",
-                description: "Buat profil AI yang disesuaikan dengan suara merek dan kebutuhan layanan pelanggan Anda."
+                title: "AI Personalities",
+                description: "Create custom AI profiles tailored to your brand voice and customer service needs."
               },
               {
                 icon: <MessageCircle className="h-8 w-8 text-purple-400" />,
-                title: "Template Pesan",
-                description: "Hemat waktu dengan template pesan untuk pertanyaan umum sambil tetap mempertahankan sentuhan personal."
+                title: "Reusable Templates",
+                description: "Save time with message templates for common inquiries while maintaining a personalized touch."
               },
               {
                 icon: <Bot className="h-8 w-8 text-cyan-400" />,
-                title: "Pelatihan Pengetahuan",
-                description: "Latih AI dengan pengetahuan perusahaan untuk memberikan informasi yang akurat dan konsisten kepada pelanggan."
+                title: "Knowledge Training",
+                description: "Train AI with company knowledge to provide accurate, consistent information to customers."
               },
               {
                 icon: <PieChart className="h-8 w-8 text-pink-400" />,
-                title: "Dashboard Analitik",
-                description: "Dapatkan wawasan tentang interaksi pelanggan dengan analitik komprehensif dan metrik kinerja."
+                title: "Analytics Dashboard",
+                description: "Gain insights into customer interactions with comprehensive analytics and performance metrics."
               },
               {
                 icon: <MessageCircle className="h-8 w-8 text-blue-400" />,
-                title: "Dukungan Suara",
-                description: "Tawarkan percakapan suara alami yang didukung oleh ElevenLabs untuk pengalaman pelanggan yang lebih baik."
+                title: "Voice Support",
+                description: "Offer natural voice conversations powered by ElevenLabs for an enhanced customer experience."
               }
             ].map((feature, index) => (
               <div key={index} className="group p-6 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
@@ -200,13 +200,10 @@ const LandingPage = () => {
             <div className="relative bg-gray-900/70 backdrop-blur-md p-12 rounded-2xl border border-gray-800">
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
-                  <h2 className="text-3xl font-bold mb-4">Siap mengubah layanan pelanggan Anda?</h2>
-                  <p className="text-gray-400 mb-6">Mulai bangun hubungan pelanggan yang lebih kuat dengan percakapan berbasis AI hari ini.</p>
-                  <Button 
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg"
-                    onClick={() => navigate('/auth')}
-                  >
-                    Mulai Sekarang
+                  <h2 className="text-3xl font-bold mb-4">Ready to transform your customer service?</h2>
+                  <p className="text-gray-400 mb-6">Start building stronger customer relationships with AI-powered conversations today.</p>
+                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg">
+                    Get Started Now
                   </Button>
                 </div>
                 <div className="hidden md:block relative">
@@ -215,8 +212,8 @@ const LandingPage = () => {
                   <div className="bg-gray-800/80 backdrop-blur-sm p-6 rounded-xl border border-gray-700 shadow-xl">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-400">Total Percakapan</h4>
-                        <p className="text-2xl font-bold text-white">3.257</p>
+                        <h4 className="text-sm font-medium text-gray-400">Total Conversations</h4>
+                        <p className="text-2xl font-bold text-white">3,257</p>
                       </div>
                       <div className="bg-gradient-to-r from-blue-500/20 to-blue-500/10 p-3 rounded-lg">
                         <MessageCircle className="h-6 w-6 text-blue-400" />
@@ -247,13 +244,13 @@ const LandingPage = () => {
             </h1>
           </div>
           <div className="flex gap-6 text-sm text-gray-400">
-            <Link to="/" className="hover:text-white transition">Beranda</Link>
-            <Link to="/auth" className="hover:text-white transition">Masuk</Link>
+            <Link to="/" className="hover:text-white transition">Home</Link>
+            <Link to="/auth" className="hover:text-white transition">Login</Link>
             <Link to="/manual" className="hover:text-white transition">Manual</Link>
-            <Link to="/contact" className="hover:text-white transition">Kontak</Link>
+            <Link to="/contact" className="hover:text-white transition">Contact</Link>
           </div>
           <div className="mt-6 md:mt-0 text-sm text-gray-500">
-            &copy; 2025 AIConverse. Hak Cipta Dilindungi.
+            &copy; 2025 AIConverse. All rights reserved.
           </div>
         </div>
       </footer>

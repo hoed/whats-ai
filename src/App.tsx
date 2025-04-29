@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ToastProvider } from "@/hooks/use-toast";
 import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
 import Templates from "./pages/Templates";
@@ -25,29 +24,27 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ToastProvider>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/manual" element={<Manual />} />
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/templates" element={<Templates />} />
-              <Route path="/ai-profiles" element={<AIProfiles />} />
-              <Route path="/chat/:sessionId" element={<ChatDetail />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/training" element={<Training />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </ToastProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/manual" element={<Manual />} />
+            <Route path="/dashboard" element={<Index />} />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route path="/templates" element={<Templates />} />
+            <Route path="/ai-profiles" element={<AIProfiles />} />
+            <Route path="/chat/:sessionId" element={<ChatDetail />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/training" element={<Training />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
