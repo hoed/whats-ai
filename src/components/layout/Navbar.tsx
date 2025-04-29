@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Bell, Settings, HelpCircle, LogIn, Menu } from 'lucide-react';
+import { Bell, Settings, HelpCircle, LogIn, Menu, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { supabase } from '@/integrations/supabase/client';
@@ -75,18 +75,19 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             <Button 
               variant="ghost" 
               onClick={handleLogout}
-              className="text-sm hidden sm:flex"
+              className="p-2"
             >
-              Logout
+              <LogOut className="h-5 w-5 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           ) : (
             <Button 
               variant="ghost" 
               onClick={() => setShowAuthDialog(true)}
-              className="text-sm hidden sm:flex"
+              className="p-2"
             >
-              <LogIn className="h-5 w-5 mr-2" />
-              Login
+              <LogIn className="h-5 w-5 sm:mr-2" />
+              <span className="hidden sm:inline">Login</span>
             </Button>
           )}
         </div>
