@@ -11,12 +11,17 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  optimizeDeps: {
+    exclude: ["react-day-picker", "hasown"], // Exclude problematic packages from dependency optimization
+  },
+  ssr: {
+    noExternal: ["react-day-picker", "hasown"], // Prevent SSR from processing these packages
   },
 }));
