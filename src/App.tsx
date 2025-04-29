@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,11 +9,12 @@ import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
 import Templates from "./pages/Templates";
 import AIProfiles from "./pages/AIProfiles";
-import ChatDetail from "./pages/ChatDetail"; // Fixed the import
+import ChatDetail from "./pages/ChatDetail";
 import Settings from "./pages/Settings";
 import SetupWhatsApp from "./pages/SetupWhatsApp";
 import Analytics from "./pages/Analytics";
 import Training from "./pages/Training";
+import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +27,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/dashboard" element={<Index />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/templates" element={<Templates />} />
             <Route path="/ai-profiles" element={<AIProfiles />} />
