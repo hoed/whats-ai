@@ -207,7 +207,7 @@ const LandingPage = () => {
                     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg"
                     onClick={() => setShowAuthDialog(true)}
                   >
-                    Mulai Sekarang
+                    <Link to="/auth">Mulai Sekarang</Link>
                   </Button>
                 </div>
                 <div className="hidden md:block relative">
