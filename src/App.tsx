@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
+import Chats from "./pages/chats";
 import Templates from "./pages/Templates";
 import AIProfiles from "./pages/AIProfiles";
 import ChatDetail from "./pages/ChatDetail";
