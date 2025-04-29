@@ -1,10 +1,12 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Phone, MessageCircle, Bot, PieChart, ArrowRight } from 'lucide-react';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Animated background */}
@@ -40,8 +42,11 @@ const LandingPage = () => {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/login" className="text-sm text-gray-300 hover:text-white transition">Login</Link>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300">
+          <Link to="/auth" className="text-sm text-gray-300 hover:text-white transition">Login</Link>
+          <Button 
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
+            onClick={() => navigate('/auth')}
+          >
             Get Started
           </Button>
         </div>
@@ -240,8 +245,8 @@ const LandingPage = () => {
           </div>
           <div className="flex gap-6 text-sm text-gray-400">
             <Link to="/" className="hover:text-white transition">Home</Link>
-            <Link to="/features" className="hover:text-white transition">Features</Link>
-            <Link to="/pricing" className="hover:text-white transition">Pricing</Link>
+            <Link to="/auth" className="hover:text-white transition">Login</Link>
+            <Link to="/manual" className="hover:text-white transition">Manual</Link>
             <Link to="/contact" className="hover:text-white transition">Contact</Link>
           </div>
           <div className="mt-6 md:mt-0 text-sm text-gray-500">

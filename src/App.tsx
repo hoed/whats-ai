@@ -16,6 +16,8 @@ import Analytics from "./pages/Analytics";
 import Training from "./pages/Training";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import Manual from "./pages/Manual";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/manual" element={<Manual />} />
             <Route path="/dashboard" element={<Index />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/templates" element={<Templates />} />

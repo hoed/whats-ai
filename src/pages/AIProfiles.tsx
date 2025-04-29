@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import EditAIProfileDialog from '@/components/modals/EditAIProfileDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type AIProfile = Database['public']['Tables']['ai_profiles']['Row'];
 
@@ -71,6 +72,19 @@ const AIProfiles = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // New profile form state
+  const [newProfile, setNewProfile] = useState<{
+    name: string;
+    description: string;
+    prompt_system: string;
+    ai_model: string;
+  }>({
+    name: '',
+    description: '',
+    prompt_system: '',
+    ai_model: 'openai',
+  });
+
   // Fetch AI profiles
   const { 
     data: aiProfiles = [], 
@@ -91,7 +105,7 @@ const AIProfiles = () => {
         description: "New AI profile has been created successfully",
       });
       setIsDialogOpen(false);
-      setNewProfile({ name: '', description: '', prompt_system: '' });
+      setNewProfile({ name: '', description: '', prompt_system: '', ai_model: 'openai' });
     },
     onError: (error: Error) => {
       toast({
@@ -140,17 +154,6 @@ const AIProfiles = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // New profile form state
-  const [newProfile, setNewProfile] = useState<{
-    name: string;
-    description: string;
-    prompt_system: string;
-  }>({
-    name: '',
-    description: '',
-    prompt_system: '',
-  });
-
   const handleCreateProfile = () => {
     if (!newProfile.name || !newProfile.prompt_system) {
       toast({
@@ -165,6 +168,7 @@ const AIProfiles = () => {
       name: newProfile.name,
       description: newProfile.description,
       prompt_system: newProfile.prompt_system,
+      ai_model: newProfile.ai_model,
     });
   };
 
@@ -224,6 +228,21 @@ const AIProfiles = () => {
                     onChange={(e) => setNewProfile({...newProfile, description: e.target.value})}
                     className="bg-gray-800 border-gray-700 text-white"
                   />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="ai-model" className="text-white">AI Model</Label>
+                  <Select
+                    value={newProfile.ai_model}
+                    onValueChange={(value) => setNewProfile({...newProfile, ai_model: value})}
+                  >
+                    <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                      <SelectValue placeholder="Select AI Model" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                      <SelectItem value="openai">OpenAI (GPT-4o)</SelectItem>
+                      <SelectItem value="gemini">Google Gemini</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="prompt" className="text-white">System Prompt</Label>
@@ -316,6 +335,11 @@ const AIProfiles = () => {
                 <CardContent className="p-4 pt-0">
                   <div className="text-sm mb-2 font-medium text-gray-400">
                     {profile.description}
+                  </div>
+                  <div className="flex items-center mb-2">
+                    <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300 mr-2">
+                      {profile.ai_model === 'gemini' ? 'Google Gemini' : 'OpenAI GPT'}
+                    </span>
                   </div>
                   <div className="text-xs text-gray-500 border-l-2 border-gray-700 pl-2 py-1 mb-3 line-clamp-3">
                     {profile.prompt_system}
