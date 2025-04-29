@@ -43,12 +43,12 @@ const LandingPage = () => {
         </div>
         <div className="flex items-center gap-4">
           <Link to="/auth" className="text-sm text-gray-300 hover:text-white transition">Masuk</Link>
-          <Button 
+            <Button 
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
             onClick={() => setShowAuthDialog(true)}
-          >
-            Mulai Sekarang
-          </Button>
+            >
+            <Link to="/auth">Mulai Sekarang</Link>
+            </Button>
         </div>
       </header>
 
