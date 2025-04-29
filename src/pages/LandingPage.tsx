@@ -70,7 +70,8 @@ const LandingPage = () => {
                   className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full px-8 py-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 text-lg"
                   onClick={() => setShowAuthDialog(true)}
                 >
-                  Mulai Uji Coba Gratis
+                  <Link to="/auth">Mulai Uji Coba Gratis
+                  </Link>
                 </Button>
               </div>
               
