@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import AuthDialog from '@/components/auth/AuthDialog';
 import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
 import Chats from "./pages/chats";
@@ -23,111 +24,127 @@ const queryClient = new QueryClient();
 
 // ProtectedRoute component to restrict access to authenticated users
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth(); // Assuming useAuth provides a user object
+  const { user, isLoading, setShowAuthDialog } = useAuth();
   const location = useLocation();
 
-  if (!user) {
-    // Redirect to /auth with the current path as a query parameter
-    return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Define public routes that don't require authentication
+  const publicRoutes = ['/', '/auth', '/manual'];
+  if (!user && !publicRoutes.includes(location.pathname)) {
+    // Open AuthDialog for protected routes
+    setShowAuthDialog(true);
+    return null; // Prevent rendering the protected route
   }
 
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/manual" element={<Manual />} />
+const App = () => {
+  const { showAuthDialog, setShowAuthDialog } = useAuth();
 
-            {/* Protected Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/contacts"
-              element={
-                <ProtectedRoute>
-                  <Contacts />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/templates"
-              element={
-                <ProtectedRoute>
-                  <Templates />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai-profiles"
-              element={
-                <ProtectedRoute>
-                  <AIProfiles />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/chat/:sessionId"
-              element={
-                <ProtectedRoute>
-                  <ChatDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/setup-whatsapp"
-              element={
-                <ProtectedRoute>
-                  <SetupWhatsApp />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/training"
-              element={
-                <ProtectedRoute>
-                  <Training />
-                </ProtectedRoute>
-              }
-            />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/manual" element={<Manual />} />
 
-            {/* Not Found Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+              {/* Protected Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/contacts"
+                element={
+                  <ProtectedRoute>
+                    <Contacts />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/templates"
+                element={
+                  <ProtectedRoute>
+                    <Templates />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ai-profiles"
+                element={
+                  <ProtectedRoute>
+                    <AIProfiles />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/chat/:sessionId"
+                element={
+                  <ProtectedRoute>
+                    <ChatDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setup-whatsapp"
+                element={
+                  <ProtectedRoute>
+                    <SetupWhatsApp />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/training"
+                element={
+                  <ProtectedRoute>
+                    <Training />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Not Found Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
