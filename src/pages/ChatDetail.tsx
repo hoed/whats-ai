@@ -14,6 +14,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 type Message = Database['public']['Tables']['messages']['Row'];
 type ChatSession = Database['public']['Tables']['chat_sessions']['Row'] & {
   contact: Database['public']['Tables']['contacts']['Row'];
@@ -32,10 +35,16 @@ const ChatDetail = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [selectedTrainingData, setSelectedTrainingData] = useState<string | null>(null);
 
+  // Validate sessionId
+  const isValidUUID = sessionId && UUID_REGEX.test(sessionId);
+
   // Fetch chat session
   const { data: session, isLoading: sessionLoading, error: sessionError } = useQuery({
     queryKey: ['chatSession', sessionId],
     queryFn: async () => {
+      if (!isValidUUID) {
+        throw new Error('Invalid session ID format');
+      }
       const { data, error } = await supabase
         .from('chat_sessions')
         .select('*, contact:contacts(*)')
@@ -48,13 +57,16 @@ const ChatDetail = () => {
       console.log('Fetched chat session:', data);
       return data as ChatSession;
     },
-    enabled: !!sessionId,
+    enabled: !!sessionId && isValidUUID,
   });
 
   // Fetch messages
   const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery({
     queryKey: ['messages', sessionId],
     queryFn: async () => {
+      if (!session?.contact_id) {
+        throw new Error('Contact ID not available');
+      }
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -63,7 +75,7 @@ const ChatDetail = () => {
           template:templates(title),
           training_data:training_data(title)
         `)
-        .eq('contact_id', session?.contact_id!)
+        .eq('contact_id', session.contact_id)
         .order('timestamp', { ascending: true });
       if (error) {
         console.error('Error fetching messages:', error);
@@ -76,7 +88,7 @@ const ChatDetail = () => {
         training_data: { title: string } | null;
       })[];
     },
-    enabled: !!session?.contact_id,
+    enabled: !!session?.contact_id && isValidUUID,
   });
 
   // Fetch AI profiles
@@ -188,6 +200,20 @@ const ChatDetail = () => {
       setSelectedTrainingData(trainingDataId);
     }
   };
+
+  if (!isValidUUID) {
+    return (
+      <DashboardLayout>
+        <div className="text-center p-8">
+          <h2 className="text-lg font-medium">Invalid Chat Session ID</h2>
+          <p className="text-red-500">The provided session ID is not valid.</p>
+          <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
+            Back to Chats
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (sessionLoading || messagesLoading) {
     return (
