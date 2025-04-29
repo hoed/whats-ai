@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -281,7 +280,7 @@ const AIProfiles = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Array(4).fill(0).map((_, index) => (
-              <Card key={`skeleton-${index}`} className="overflow-hidden border-gray-700 bg-gray-800/50 backdrop-blur-sm">
+              <Card key={`skeleton-${index}`} className="overflow-hidden border-gray-600 bg-gray-900/80 backdrop-blur-sm">
                 <CardHeader className="p-4 pb-2">
                   <div className="h-6 bg-gray-700 rounded w-2/3 animate-pulse"></div>
                 </CardHeader>
@@ -299,52 +298,52 @@ const AIProfiles = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredProfiles.map((profile) => (
-              <Card key={profile.id} className="overflow-hidden border border-gray-700 bg-gray-800/50 backdrop-blur-sm transform hover:scale-102 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
-                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-gradient-to-r from-blue-900/40 to-purple-900/40">
+              <Card key={profile.id} className="overflow-hidden border border-gray-600 bg-gray-900/80 backdrop-blur-sm transform hover:scale-102 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-gradient-to-r from-blue-900/50 to-purple-900/50">
                   <div className="flex items-center">
-                    <Star className="h-5 w-5 text-amber-400 mr-2" />
-                    <CardTitle className="text-base text-white">{profile.name}</CardTitle>
+                    <Star className="h-5 w-5 text-amber-300 mr-2" />
+                    <CardTitle className="text-base text-gray-100">{profile.name}</CardTitle>
                   </div>
                   <div className="flex space-x-1">
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-gray-700"
+                      className="h-8 w-8 hover:bg-gray-800"
                       onClick={() => handleCopyProfile(profile.prompt_system)}
                     >
-                      <Copy className="h-4 w-4 text-blue-400" />
+                      <Copy className="h-4 w-4 text-blue-300" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-gray-700"
+                      className="h-8 w-8 hover:bg-gray-800"
                       onClick={() => handleEditProfile(profile)}
                     >
-                      <Edit className="h-4 w-4 text-blue-400" />
+                      <Edit className="h-4 w-4 text-blue-300" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-gray-700"
+                      className="h-8 w-8 hover:bg-gray-800"
                       onClick={() => handleDeleteProfile(profile.id)}
                     >
-                      <Trash className="h-4 w-4 text-red-500" />
+                      <Trash className="h-4 w-4 text-red-400" />
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
-                  <div className="text-sm mb-2 font-medium text-gray-400">
+                  <div className="text-sm mb-2 font-medium text-gray-300">
                     {profile.description}
                   </div>
                   <div className="flex items-center mb-2">
-                    <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300 mr-2">
+                    <span className="text-xs px-2 py-1 rounded bg-blue-500/30 text-blue-300 mr-2">
                       {profile.ai_model === 'gemini' ? 'Google Gemini' : 'OpenAI GPT'}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 border-l-2 border-gray-700 pl-2 py-1 mb-3 line-clamp-3">
+                  <div className="text-xs text-gray-400 border-l-2 border-gray-600 pl-2 py-1 mb-3 line-clamp-3">
                     {profile.prompt_system}
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-gray-500">
                     Created {formatDate(profile.created_at!)}
                   </div>
                 </CardContent>
@@ -353,7 +352,7 @@ const AIProfiles = () => {
             
             {filteredProfiles.length === 0 && (
               <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
-                <Star className="h-12 w-12 text-gray-700" />
+                <Star className="h-12 w-12 text-gray-600" />
                 <h3 className="mt-2 text-lg font-medium text-gray-300">No AI profiles found</h3>
                 <p className="text-sm text-gray-500">Create AI personality profiles or try a different search query</p>
               </div>

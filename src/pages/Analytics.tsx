@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Bar } from 'react-chartjs-2';
@@ -230,95 +229,95 @@ const Analytics = () => {
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Analytics Dashboard</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg hover:shadow-blue-400/20 transition-all duration-300">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-sm font-medium text-gray-400">Total Chats</CardTitle>
-                <div className="p-2 rounded-lg bg-blue-500/20">
-                  <MessageSquare className="h-4 w-4 text-blue-400" />
+                <CardTitle className="text-sm font-medium text-gray-300">Total Chats</CardTitle>
+                <div className="p-2 rounded-lg bg-blue-500/30">
+                  <MessageSquare className="h-4 w-4 text-blue-300" />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline">
-                <p className="text-3xl font-bold text-white">{totalSessions}</p>
-                <span className="ml-2 text-xs text-green-500">+{Math.round(totalSessions * 0.15)} this week</span>
+                <p className="text-3xl font-bold text-gray-100">{totalSessions}</p>
+                <span className="ml-2 text-xs text-green-400">+{Math.round(totalSessions * 0.15)} this week</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">From all time</p>
+              <p className="text-xs text-gray-400 mt-1">From all time</p>
             </CardContent>
           </Card>
           
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg hover:shadow-purple-400/20 transition-all duration-300">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-sm font-medium text-gray-400">Active Chats</CardTitle>
-                <div className="p-2 rounded-lg bg-purple-500/20">
-                  <Users className="h-4 w-4 text-purple-400" />
+                <CardTitle className="text-sm font-medium text-gray-300">Active Chats</CardTitle>
+                <div className="p-2 rounded-lg bg-purple-500/30">
+                  <Users className="h-4 w-4 text-purple-300" />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline">
-                <p className="text-3xl font-bold text-white">{openSessions}</p>
-                <span className="ml-2 text-xs text-green-500">+{Math.round(openSessions * 0.2)} this week</span>
+                <p className="text-3xl font-bold text-gray-100">{openSessions}</p>
+                <span className="ml-2 text-xs text-green-400">+{Math.round(openSessions * 0.2)} this week</span>
               </div>
-              <div className="w-full h-1.5 bg-gray-700 rounded-full mt-2 overflow-hidden">
+              <div className="w-full h-1.5 bg-gray-600 rounded-full mt-2 overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full" 
                   style={{ width: `${Math.min(100, (openSessions / Math.max(1, totalSessions)) * 100)}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Open conversations</p>
+              <p className="text-xs text-gray-400 mt-1">Open conversations</p>
             </CardContent>
           </Card>
           
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg hover:shadow-indigo-500/5 transition-all duration-300">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg hover:shadow-indigo-400/20 transition-all duration-300">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-sm font-medium text-gray-400">Messages</CardTitle>
-                <div className="p-2 rounded-lg bg-indigo-500/20">
-                  <CheckCircle className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-sm font-medium text-gray-300">Messages</CardTitle>
+                <div className="p-2 rounded-lg bg-indigo-500/30">
+                  <CheckCircle className="h-4 w-4 text-indigo-300" />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline">
-                <p className="text-3xl font-bold text-white">{totalMessages}</p>
-                <span className="ml-2 text-xs text-green-500">+{Math.round(totalMessages * 0.1)} today</span>
+                <p className="text-3xl font-bold text-gray-100">{totalMessages}</p>
+                <span className="ml-2 text-xs text-green-400">+{Math.round(totalMessages * 0.1)} today</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Total messages exchanged</p>
+              <p className="text-xs text-gray-400 mt-1">Total messages exchanged</p>
             </CardContent>
           </Card>
           
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg hover:shadow-cyan-500/5 transition-all duration-300">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg hover:shadow-cyan-400/20 transition-all duration-300">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-sm font-medium text-gray-400">Response Rate</CardTitle>
-                <div className="p-2 rounded-lg bg-cyan-500/20">
-                  <Clock className="h-4 w-4 text-cyan-400" />
+                <CardTitle className="text-sm font-medium text-gray-300">Response Rate</CardTitle>
+                <div className="p-2 rounded-lg bg-cyan-500/30">
+                  <Clock className="h-4 w-4 text-cyan-300" />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline">
-                <p className="text-3xl font-bold text-white">{responseRate}%</p>
+                <p className="text-3xl font-bold text-gray-100">{responseRate}%</p>
                 {responseRate >= 95 ? (
-                  <span className="ml-2 text-xs text-green-500">Excellent</span>
+                  <span className="ml-2 text-xs text-green-400">Excellent</span>
                 ) : responseRate >= 80 ? (
-                  <span className="ml-2 text-xs text-yellow-500">Good</span>
+                  <span className="ml-2 text-xs text-yellow-400">Good</span>
                 ) : (
-                  <span className="ml-2 text-xs text-red-500">Needs improvement</span>
+                  <span className="ml-2 text-xs text-red-400">Needs improvement</span>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">AI responds to user messages</p>
+              <p className="text-xs text-gray-400 mt-1">AI responds to user messages</p>
             </CardContent>
           </Card>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg lg:col-span-2">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg">
             <CardHeader>
-              <CardTitle className="text-white">Messages Over Time</CardTitle>
+              <CardTitle className="text-gray-100">Messages Over Time</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[350px]">
@@ -327,9 +326,9 @@ const Analytics = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg">
             <CardHeader>
-              <CardTitle className="text-white">Message Distribution</CardTitle>
+              <CardTitle className="text-gray-100">Message Distribution</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[350px] flex items-center justify-center">
@@ -340,9 +339,9 @@ const Analytics = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg">
             <CardHeader>
-              <CardTitle className="text-white">Top AI Profiles</CardTitle>
+              <CardTitle className="text-gray-100">Top AI Profiles</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -357,7 +356,7 @@ const Analytics = () => {
                       <span className="text-sm text-gray-300">{profile.name}</span>
                       <span className="text-sm text-gray-400">{profile.usage} uses</span>
                     </div>
-                    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-gray-600 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
                         style={{ width: `${(profile.usage / 70) * 100}%` }}
@@ -369,29 +368,29 @@ const Analytics = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-gray-700 bg-gray-800/50 backdrop-blur-sm shadow-lg">
+          <Card className="border-gray-600 bg-gray-900/80 backdrop-blur-sm shadow-lg">
             <CardHeader>
-              <CardTitle className="text-white">Response Time</CardTitle>
+              <CardTitle className="text-gray-100">Response Time</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col h-full justify-center">
                 <div className="text-center">
-                  <p className="text-5xl font-bold text-blue-400">1.2s</p>
+                  <p className="text-5xl font-bold text-blue-300">1.2s</p>
                   <p className="text-sm text-gray-400 mt-2">Average response time</p>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4 mt-8">
                   <div className="text-center">
-                    <p className="text-lg font-bold text-indigo-400">0.8s</p>
-                    <p className="text-xs text-gray-500">Fastest</p>
+                    <p className="text-lg font-bold text-indigo-300">0.8s</p>
+                    <p className="text-xs text-gray-400">Fastest</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg font-bold text-purple-400">1.2s</p>
-                    <p className="text-xs text-gray-500">Average</p>
+                    <p className="text-lg font-bold text-purple-300">1.2s</p>
+                    <p className="text-xs text-gray-400">Average</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-lg font-bold text-cyan-400">3.5s</p>
-                    <p className="text-xs text-gray-500">Slowest</p>
+                    <p className="text-lg font-bold text-cyan-300">3.5s</p>
+                    <p className="text-xs text-gray-400">Slowest</p>
                   </div>
                 </div>
               </div>

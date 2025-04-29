@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -248,7 +247,7 @@ const Training = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array(6).fill(0).map((_, index) => (
-              <Card key={`skeleton-${index}`} className="overflow-hidden border-gray-700 bg-gray-800/50 backdrop-blur-sm">
+              <Card key={`skeleton-${index}`} className="overflow-hidden border-gray-600 bg-gray-900/80 backdrop-blur-sm">
                 <CardHeader className="p-4 pb-2">
                   <div className="h-6 bg-gray-700 rounded w-2/3 animate-pulse"></div>
                 </CardHeader>
@@ -266,25 +265,25 @@ const Training = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTrainingData.map((data) => (
-              <Card key={data.id} className="overflow-hidden border border-gray-700 bg-gray-800/50 backdrop-blur-sm transform hover:scale-102 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
-                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-gradient-to-r from-blue-900/40 to-purple-900/40">
-                  <CardTitle className="text-base text-white">{data.title}</CardTitle>
+              <Card key={data.id} className="overflow-hidden border border-gray-600 bg-gray-900/80 backdrop-blur-sm transform hover:scale-102 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between bg-gradient-to-r from-blue-900/50 to-purple-900/50">
+                  <CardTitle className="text-base text-gray-100">{data.title}</CardTitle>
                   <div className="flex space-x-1">
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-gray-700"
+                      className="h-8 w-8 hover:bg-gray-800"
                       onClick={() => handleEditTrainingData(data)}
                     >
-                      <Edit className="h-4 w-4 text-blue-400" />
+                      <Edit className="h-4 w-4 text-blue-300" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-gray-700"
+                      className="h-8 w-8 hover:bg-gray-800"
                       onClick={() => handleDeleteTrainingData(data.id)}
                     >
-                      <Trash className="h-4 w-4 text-red-500" />
+                      <Trash className="h-4 w-4 text-red-400" />
                     </Button>
                   </div>
                 </CardHeader>
@@ -292,12 +291,12 @@ const Training = () => {
                   <div className="mb-3 text-sm line-clamp-3 text-gray-300">{data.content}</div>
                   {data.category && (
                     <div className="flex flex-wrap gap-1 mb-2">
-                      <Badge variant="outline" className="text-xs border-gray-600 text-blue-400">
+                      <Badge variant="outline" className="text-xs border-gray-600 text-blue-300">
                         {data.category}
                       </Badge>
                     </div>
                   )}
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-400">
                     Created {formatDate(data.created_at)}
                   </div>
                 </CardContent>
@@ -306,7 +305,7 @@ const Training = () => {
             
             {filteredTrainingData.length === 0 && (
               <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
-                <BookOpen className="h-12 w-12 text-gray-700" />
+                <BookOpen className="h-12 w-12 text-gray-600" />
                 <h3 className="mt-2 text-lg font-medium text-gray-300">No training data found</h3>
                 <p className="text-sm text-gray-500">Add training data or try a different search query</p>
               </div>
