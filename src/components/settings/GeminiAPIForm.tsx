@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,33 @@ const GeminiAPIForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   
+  // Fetch existing API key on component mount
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('api_keys')
+          .select('key_value')
+          .eq('key_name', 'gemini_key')
+          .single();
+          
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching API key:', error);
+          return;
+        }
+        
+        if (data) {
+          setApiKey(data.key_value);
+          setIsSaved(true);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    
+    fetchApiKey();
+  }, []);
+  
   const handleSave = async () => {
     if (!apiKey.trim()) {
       toast({
@@ -28,17 +55,32 @@ const GeminiAPIForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Save to Supabase user metadata
-      const { error } = await supabase
+      // Check if a key already exists
+      const { data } = await supabase
         .from('api_keys')
-        .upsert(
-          { 
+        .select('id')
+        .eq('key_name', 'gemini_key')
+        .maybeSingle();
+      
+      let operation;
+      
+      if (data) {
+        // Update existing key
+        operation = supabase
+          .from('api_keys')
+          .update({ key_value: apiKey })
+          .eq('key_name', 'gemini_key');
+      } else {
+        // Insert new key
+        operation = supabase
+          .from('api_keys')
+          .insert({ 
             key_name: 'gemini_key',
-            key_value: apiKey,
-            created_at: new Date().toISOString()
-          },
-          { onConflict: 'key_name' }
-        );
+            key_value: apiKey
+          });
+      }
+      
+      const { error } = await operation;
       
       if (error) throw error;
       

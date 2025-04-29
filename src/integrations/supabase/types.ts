@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       ai_profiles: {
         Row: {
+          ai_model: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -18,6 +19,7 @@ export type Database = {
           prompt_system: string
         }
         Insert: {
+          ai_model?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -25,11 +27,33 @@ export type Database = {
           prompt_system: string
         }
         Update: {
+          ai_model?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name?: string
           prompt_system?: string
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          id: string
+          key_name: string
+          key_value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key_name: string
+          key_value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key_name?: string
+          key_value?: string
         }
         Relationships: []
       }
@@ -202,6 +226,33 @@ export type Database = {
           id?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          dark_mode: boolean | null
+          id: string
+          language: string | null
+          notifications: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          dark_mode?: boolean | null
+          id?: string
+          language?: string | null
+          notifications?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          dark_mode?: boolean | null
+          id?: string
+          language?: string | null
+          notifications?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

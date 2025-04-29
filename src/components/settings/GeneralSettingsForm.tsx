@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -14,22 +14,69 @@ const GeneralSettingsForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   
+  // Fetch existing settings on component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_settings')
+          .select('*')
+          .maybeSingle();
+          
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching settings:', error);
+          return;
+        }
+        
+        if (data) {
+          setLanguage(data.language || 'id');
+          setDarkMode(data.dark_mode || false);
+          setNotifications(data.notifications || true);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    
+    fetchSettings();
+  }, []);
+  
   const handleSaveSettings = async () => {
     setIsLoading(true);
     
     try {
-      // Save to Supabase user settings
-      const { error } = await supabase
+      // Check if settings already exist
+      const { data } = await supabase
         .from('user_settings')
-        .upsert(
-          { 
+        .select('id')
+        .maybeSingle();
+      
+      let operation;
+      
+      if (data) {
+        // Update existing settings
+        operation = supabase
+          .from('user_settings')
+          .update({ 
             language,
             dark_mode: darkMode,
             notifications,
             updated_at: new Date().toISOString()
-          },
-          { onConflict: 'user_id' }
-        );
+          })
+          .eq('id', data.id);
+      } else {
+        // Insert new settings
+        operation = supabase
+          .from('user_settings')
+          .insert({ 
+            language,
+            dark_mode: darkMode,
+            notifications,
+            updated_at: new Date().toISOString()
+          });
+      }
+      
+      const { error } = await operation;
       
       if (error) throw error;
       
