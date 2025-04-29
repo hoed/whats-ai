@@ -1,10 +1,9 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
 import Chats from "./pages/chats";
@@ -22,6 +21,19 @@ import Manual from "./pages/Manual";
 
 const queryClient = new QueryClient();
 
+// ProtectedRoute component to restrict access to authenticated users
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth(); // Assuming useAuth provides a user object
+  const location = useLocation();
+
+  if (!user) {
+    // Redirect to /auth with the current path as a query parameter
+    return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -30,18 +42,86 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/manual" element={<Manual />} />
-            <Route path="/dashboard" element={<Index />} />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="/templates" element={<Templates />} />
-            <Route path="/ai-profiles" element={<AIProfiles />} />
-            <Route path="/chat/:sessionId" element={<ChatDetail />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/training" element={<Training />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contacts"
+              element={
+                <ProtectedRoute>
+                  <Contacts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/templates"
+              element={
+                <ProtectedRoute>
+                  <Templates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai-profiles"
+              element={
+                <ProtectedRoute>
+                  <AIProfiles />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat/:sessionId"
+              element={
+                <ProtectedRoute>
+                  <ChatDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/setup-whatsapp"
+              element={
+                <ProtectedRoute>
+                  <SetupWhatsApp />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/training"
+              element={
+                <ProtectedRoute>
+                  <Training />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Not Found Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
