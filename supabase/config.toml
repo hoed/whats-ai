@@ -19,3 +19,8 @@ port = 54323
 [[functions]]
 verify_jwt = true
 name = "whatsapp-chat"
+
+[[functions]]
+verify_jwt = true
+name = "gemini-chat"
+

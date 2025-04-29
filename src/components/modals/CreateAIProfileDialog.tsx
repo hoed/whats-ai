@@ -14,35 +14,30 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-type AIProfile = Database['public']['Tables']['ai_profiles']['Row'];
-
-interface EditAIProfileDialogProps {
+interface CreateAIProfileDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: AIProfile;
   onSuccess: () => void;
 }
 
-export default function EditAIProfileDialog({
+export default function CreateAIProfileDialog({
   isOpen,
   onClose,
-  profile,
   onSuccess,
-}: EditAIProfileDialogProps) {
-  const [updatedProfile, setUpdatedProfile] = useState({
-    name: profile.name,
-    description: profile.description || '',
-    prompt_system: profile.prompt_system,
-    ai_model: profile.ai_model || 'openai',
+}: CreateAIProfileDialogProps) {
+  const [profile, setProfile] = useState({
+    name: '',
+    description: '',
+    prompt_system: '',
+    ai_model: 'openai', // Default to OpenAI
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async () => {
-    if (!updatedProfile.name || !updatedProfile.prompt_system) {
+    if (!profile.name || !profile.prompt_system) {
       toast({
         title: "Kesalahan",
         description: "Nama dan prompt sistem diperlukan",
@@ -56,19 +51,25 @@ export default function EditAIProfileDialog({
       
       const { error } = await supabase
         .from('ai_profiles')
-        .update({
-          name: updatedProfile.name,
-          description: updatedProfile.description,
-          prompt_system: updatedProfile.prompt_system,
-          ai_model: updatedProfile.ai_model,
-        })
-        .eq('id', profile.id);
+        .insert({
+          name: profile.name,
+          description: profile.description || null,
+          prompt_system: profile.prompt_system,
+          ai_model: profile.ai_model,
+        });
 
       if (error) throw error;
 
       toast({
-        title: "Profil AI Diperbarui",
-        description: "Profil AI telah berhasil diperbarui",
+        title: "Profil AI Dibuat",
+        description: "Profil AI baru telah berhasil dibuat",
+      });
+      
+      setProfile({
+        name: '',
+        description: '',
+        prompt_system: '',
+        ai_model: 'openai',
       });
       
       onSuccess();
@@ -76,7 +77,7 @@ export default function EditAIProfileDialog({
     } catch (error: any) {
       toast({
         title: "Kesalahan",
-        description: error.message || "Gagal memperbarui profil AI",
+        description: error.message || "Gagal membuat profil AI",
         variant: "destructive",
       });
     } finally {
@@ -88,33 +89,35 @@ export default function EditAIProfileDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Edit Profil AI</DialogTitle>
+          <DialogTitle>Buat Profil AI</DialogTitle>
           <DialogDescription>
-            Perbarui profil kepribadian AI dengan karakteristik dan perilaku tertentu.
+            Buat profil kepribadian AI baru dengan karakteristik dan perilaku tertentu.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="edit-name">Nama Profil</Label>
+            <Label htmlFor="name">Nama Profil</Label>
             <Input
-              id="edit-name"
-              value={updatedProfile.name}
-              onChange={(e) => setUpdatedProfile({...updatedProfile, name: e.target.value})}
+              id="name"
+              placeholder="Asisten Penjualan"
+              value={profile.name}
+              onChange={(e) => setProfile({...profile, name: e.target.value})}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="edit-description">Deskripsi Profil</Label>
+            <Label htmlFor="description">Deskripsi Profil</Label>
             <Input
-              id="edit-description"
-              value={updatedProfile.description}
-              onChange={(e) => setUpdatedProfile({...updatedProfile, description: e.target.value})}
+              id="description"
+              placeholder="Asisten untuk membantu pelanggan dengan pertanyaan produk"
+              value={profile.description}
+              onChange={(e) => setProfile({...profile, description: e.target.value})}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="edit-ai-model">Model AI</Label>
+            <Label htmlFor="ai_model">Model AI</Label>
             <Select 
-              value={updatedProfile.ai_model} 
-              onValueChange={(value) => setUpdatedProfile({...updatedProfile, ai_model: value})}
+              value={profile.ai_model} 
+              onValueChange={(value) => setProfile({...profile, ai_model: value})}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih Model AI" />
@@ -126,19 +129,20 @@ export default function EditAIProfileDialog({
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="edit-prompt">Prompt Sistem</Label>
+            <Label htmlFor="prompt">Prompt Sistem</Label>
             <Textarea
-              id="edit-prompt"
+              id="prompt"
               rows={6}
-              value={updatedProfile.prompt_system}
-              onChange={(e) => setUpdatedProfile({...updatedProfile, prompt_system: e.target.value})}
+              placeholder="Anda adalah asisten penjualan yang sopan dan berpengetahuan luas..."
+              value={profile.prompt_system}
+              onChange={(e) => setProfile({...profile, prompt_system: e.target.value})}
             />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Batal</Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "Memperbarui..." : "Perbarui Profil"}
+            {isLoading ? "Membuat..." : "Buat Profil"}
           </Button>
         </DialogFooter>
       </DialogContent>

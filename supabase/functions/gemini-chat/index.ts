@@ -5,7 +5,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
 const geminiApiKey = Deno.env.get("GEMINI_API_KEY")!;
 const elevenlabsApiKey = Deno.env.get("ELEVENLABS_API_KEY")!;
 
@@ -71,12 +70,10 @@ serve(async (req) => {
       ? "Anda adalah asisten AI yang membantu untuk akun bisnis WhatsApp."
       : "You are a helpful AI assistant for a WhatsApp business account.";
     
-    let aiModel = 'openai'; // Default to OpenAI
-    
     if (sessionData?.ai_profile_id) {
       const { data: aiProfile, error: profileError } = await supabase
         .from('ai_profiles')
-        .select('prompt_system, ai_model')
+        .select('prompt_system')
         .eq('id', sessionData.ai_profile_id)
         .single();
       
@@ -86,7 +83,6 @@ serve(async (req) => {
       
       if (aiProfile) {
         systemPrompt = aiProfile.prompt_system;
-        aiModel = aiProfile.ai_model || 'openai';
       }
     }
     
@@ -95,82 +91,48 @@ serve(async (req) => {
       ? `${systemPrompt}\n\nGunakan informasi berikut untuk menjawab pertanyaan pelanggan:\n${trainingContext}`
       : `${systemPrompt}\n\nUse the following information to answer customer questions:\n${trainingContext}`;
     
-    let aiReply;
-    
-    // Choose AI model based on profile setting
-    if (aiModel === 'gemini') {
-      // Use Gemini model
-      const geminiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: `System instructions: ${enhancedSystemPrompt}`
-                }
-              ]
-            },
-            ...conversationHistory.map(msg => ({
-              role: msg.role === "ai" ? "model" : "user",
-              parts: [{ text: msg.content }]
-            })),
-            {
-              role: "user",
-              parts: [{ text: message }]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 800
+    // Create Gemini API request
+    const geminiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": geminiApiKey
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `System instructions: ${enhancedSystemPrompt}`
+              }
+            ]
+          },
+          ...conversationHistory.map(msg => ({
+            role: msg.role === "ai" ? "model" : "user",
+            parts: [{ text: msg.content }]
+          })),
+          {
+            role: "user",
+            parts: [{ text: message }]
           }
-        })
-      });
-      
-      if (!geminiResponse.ok) {
-        const errorData = await geminiResponse.json();
-        throw new Error(`Gemini API error: ${JSON.stringify(errorData)}`);
-      }
-      
-      const aiResult = await geminiResponse.json();
-      aiReply = aiResult.candidates[0].content.parts[0].text;
-      
-    } else {
-      // Use OpenAI model (default)
-      const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${openaiApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: enhancedSystemPrompt },
-            ...conversationHistory.map(msg => ({ 
-              role: msg.role, 
-              content: msg.content 
-            })),
-            { role: "user", content: message }
-          ],
-        }),
-      });
-      
-      if (!openaiResponse.ok) {
-        const errorData = await openaiResponse.json();
-        throw new Error(`OpenAI API error: ${JSON.stringify(errorData)}`);
-      }
-      
-      const aiResult = await openaiResponse.json();
-      aiReply = aiResult.choices[0].message.content;
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 800
+        }
+      })
+    });
+    
+    if (!geminiResponse.ok) {
+      const errorData = await geminiResponse.json();
+      throw new Error(`Gemini API error: ${JSON.stringify(errorData)}`);
     }
+    
+    const aiResult = await geminiResponse.json();
+    const aiReply = aiResult.candidates[0].content.parts[0].text;
     
     // Store the user message and AI reply in the database
     const { error: insertUserError } = await supabase
@@ -259,7 +221,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error in whatsapp-chat function:", error);
+    console.error("Error in gemini-chat function:", error);
     
     return new Response(
       JSON.stringify({ error: error.message }),
