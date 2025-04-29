@@ -9,10 +9,16 @@ import {
   Settings,
   BarChart2,
   Star,
-  BookOpen // Added new icon for Training
+  BookOpen,
+  X
 } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -23,21 +29,39 @@ const Sidebar: React.FC = () => {
     { label: 'Contacts', icon: <Users size={20} />, path: '/contacts' },
     { label: 'Templates', icon: <FileText size={20} />, path: '/templates' },
     { label: 'AI Profiles', icon: <Star size={20} />, path: '/ai-profiles' },
-    { label: 'Training', icon: <BookOpen size={20} />, path: '/training' }, // Added Training menu item
+    { label: 'Training', icon: <BookOpen size={20} />, path: '/training' },
     { label: 'Analytics', icon: <BarChart2 size={20} />, path: '/analytics' },
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
   
   return (
-    <aside className="w-64 h-[calc(100vh-4rem)] border-r border-gray-200 bg-gray-50 flex flex-col">
-      <div className="p-4 flex-grow">
+    <aside className={`
+      fixed lg:static inset-y-0 left-0 z-30 w-64 
+      bg-gray-50 border-r border-gray-200
+      transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+      lg:translate-x-0 transition-transform duration-300 ease-in-out
+      flex flex-col
+    `}>
+      <div className="flex justify-between items-center p-4 lg:hidden">
+        <span className="text-lg font-bold">Menu</span>
+        <Button variant="ghost" size="icon" onClick={onClose}>
+          <X size={20} />
+        </Button>
+      </div>
+      
+      <div className="p-4 flex-grow overflow-y-auto">
         <nav className="space-y-2">
           {menuItems.map((item) => (
             <Button
               key={item.path}
               variant={isActive(item.path) ? 'default' : 'ghost'}
-              className={`w-full justify-start ${isActive(item.path) ? 'bg-brand-blue hover:bg-brand-blue/90' : ''}`}
-              onClick={() => navigate(item.path)}
+              className={`w-full justify-start ${
+                isActive(item.path) ? 'bg-brand-blue hover:bg-brand-blue/90' : ''
+              }`}
+              onClick={() => {
+                navigate(item.path);
+                onClose();
+              }}
             >
               {item.icon}
               <span className="ml-2">{item.label}</span>
