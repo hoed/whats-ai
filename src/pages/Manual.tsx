@@ -39,21 +39,14 @@ const Manual = () => {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            className="text-blue-300 hover:text-blue-200 border-gray-600 hover:border-gray-500"
-            onClick={() => setShowAuthDialog(true)}
-          >
-            Masuk
-          </Button>
         </div>
       </header>
 
       {/* Main content */}
       <main className="relative z-10 max-w-7xl mx-auto py-12 px-6">
         <div className="flex items-center mb-8">
-          <Link to="/">
-            <Button variant="outline" size="sm" className="mr-4 border-gray-600 hover:border-gray-500 text-gray-200 hover:text-white">
+          <Link to="/dashboard">
+            <Button variant="outline" size="sm" className="mr-4 border-gray-600 hover:border-gray-500 text-blue-900 hover:text-black">
               <ChevronLeft className="h-4 w-4 mr-1" /> Kembali
             </Button>
           </Link>
@@ -354,7 +347,7 @@ const Manual = () => {
       <footer className="relative z-10 py-8 px-6 border-t border-gray-800/50 backdrop-blur-sm mt-12">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-sm text-gray-400">
-            © 2025 AIConverse. Semua hak dilindungi.
+            © 2025 Hoed - AIConverse. Semua hak dilindungi.
           </p>
         </div>
       </footer>
