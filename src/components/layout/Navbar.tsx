@@ -51,8 +51,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             onClick={() => navigate('/')} 
             className="flex items-center"
           >
-            <span className="text-brand-blue text-lg sm:text-xl font-bold">WhatsAI</span>
-            <span className="text-brand-green text-lg sm:text-xl font-bold">Service</span>
+            <span className="text-brand-blue text-lg sm:text-xl font-bold">AI</span>
+            <span className="text-brand-green text-lg sm:text-xl font-bold">Converse</span>
           </button>
         </div>
         

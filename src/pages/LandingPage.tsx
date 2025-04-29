@@ -243,14 +243,9 @@ const LandingPage = () => {
               AIConverse
             </h1>
           </div>
-          <div className="flex gap-6 text-sm text-gray-400">
-            <Link to="/" className="hover:text-white transition">Home</Link>
-            <Link to="/auth" className="hover:text-white transition">Login</Link>
-            <Link to="/manual" className="hover:text-white transition">Manual</Link>
-            <Link to="/contact" className="hover:text-white transition">Contact</Link>
-          </div>
+
           <div className="mt-6 md:mt-0 text-sm text-gray-500">
-            &copy; 2025 AIConverse. All rights reserved.
+            &copy; 2025 Hoed - AIConverse. All rights reserved.
           </div>
         </div>
       </footer>

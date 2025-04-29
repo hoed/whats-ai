@@ -177,55 +177,58 @@ const Contacts = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4">
+      <div className="space-y-4 bg-gradient-to-br from-blue-900/20 to-purple-900/20 p-4 rounded-lg backdrop-blur-sm">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Contacts</h1>
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Contacts</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Contact
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[550px]">
+            <DialogContent className="sm:max-w-[550px] bg-gradient-to-b from-gray-900 to-gray-800 border border-gray-700 shadow-2xl">
               <DialogHeader>
-                <DialogTitle>Add New Contact</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-gray-100">Add New Contact</DialogTitle>
+                <DialogDescription className="text-gray-400">
                   Add a new contact to your list. Ensure the phone number is in international format (e.g., +1234567890).
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name" className="text-gray-100">Name</Label>
                   <Input
                     id="name"
                     placeholder="e.g. John Doe"
                     value={newContact.name}
                     onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                    className="bg-gray-800 border-gray-700 text-gray-100"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="phone_number">Phone Number</Label>
+                  <Label htmlFor="phone_number" className="text-gray-100">Phone Number</Label>
                   <Input
                     id="phone_number"
                     placeholder="e.g. +1234567890"
                     value={newContact.phone_number}
                     onChange={(e) => setNewContact({ ...newContact, phone_number: e.target.value })}
+                    className="bg-gray-800 border-gray-700 text-gray-100"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="tags">Tags (comma-separated, optional)</Label>
+                  <Label htmlFor="tags" className="text-gray-100">Tags (comma-separated, optional)</Label>
                   <Input
                     id="tags"
                     placeholder="e.g. customer, vip"
                     value={newContact.tags.join(', ')}
                     onChange={(e) => handleTagsChange(e.target.value)}
+                    className="bg-gray-800 border-gray-700 text-gray-100"
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreateContact} disabled={createMutation.isPending}>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} className="border-gray-700 text-gray-300 hover:bg-gray-700">Cancel</Button>
+                <Button onClick={handleCreateContact} disabled={createMutation.isPending} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600">
                   {createMutation.isPending ? "Creating..." : "Create Contact"}
                 </Button>
               </DialogFooter>
@@ -238,7 +241,7 @@ const Contacts = () => {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search contacts..."
-              className="pl-8"
+              className="pl-8 bg-gray-800/50 border-gray-700 text-gray-100"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -248,12 +251,12 @@ const Contacts = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array(6).fill(0).map((_, index) => (
-              <Card key={`skeleton-${index}`} className="overflow-hidden">
+              <Card key={`skeleton-${index}`} className="overflow-hidden border-gray-600 bg-gray-900/80 backdrop-blur-sm">
                 <CardHeader className="p-4 pb-2">
-                  <div className="h-6 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                  <div className="h-6 bg-gray-700 rounded w-2/3 animate-pulse"></div>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                  <div className="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
                 </CardContent>
               </Card>
             ))}
@@ -265,18 +268,18 @@ const Contacts = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredContacts.map((contact) => (
-              <Card key={contact.id} className="overflow-hidden">
-                <CardHeader className="p-4 pb-2">
-                  <CardTitle className="text-base">{contact.name}</CardTitle>
+              <Card key={contact.id} className="overflow-hidden border border-gray-600 bg-gray-900/80 backdrop-blur-sm transform hover:scale-102 transition-all duration-300 hover:shadow-lg hover:shadow-blue-400/20">
+                <CardHeader className="p-4 pb-2 bg-gradient-to-r from-blue-900/50 to-purple-900/50">
+                  <CardTitle className="text-base text-gray-100">{contact.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
-                  <div className="mb-2 text-sm">{contact.phone_number}</div>
-                  <div className="mb-2 text-sm">
+                  <div className="mb-2 text-sm text-gray-300">{contact.phone_number}</div>
+                  <div className="mb-2 text-sm text-gray-300">
                     Messages: {contact.message_count || 0}
                   </div>
                   {contact.latest_session_status && (
                     <div className="mb-2">
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="text-xs border-gray-600 text-blue-300 bg-blue-500/30">
                         Session: {contact.latest_session_status}
                       </Badge>
                     </div>
@@ -284,13 +287,13 @@ const Contacts = () => {
                   {contact.tags && contact.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
                       {contact.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <Badge key={index} variant="outline" className="text-xs border-gray-600 text-blue-300 bg-blue-500/30">
                           {tag}
                         </Badge>
                       ))}
                     </div>
                   )}
-                  <div className="text-xs text-gray-500 mb-2">
+                  <div className="text-xs text-gray-400 mb-2">
                     Created {formatDate(contact.created_at!)}
                   </div>
                   <div className="flex space-x-2">
@@ -298,6 +301,7 @@ const Contacts = () => {
                       variant="outline"
                       size="sm"
                       asChild
+                      className="border-gray-600 text-blue-300 hover:bg-gray-800"
                     >
                       <a
                         href={generateWhatsAppLink(contact.phone_number)}
@@ -305,7 +309,7 @@ const Contacts = () => {
                         rel="noopener noreferrer"
                         className="flex items-center"
                       >
-                        <MessageCircle className="h-4 w-4 mr-2" />
+                        <MessageCircle className="h-4 w-4 mr-2 text-blue-300" />
                         Chat on WhatsApp
                       </a>
                     </Button>
@@ -314,8 +318,9 @@ const Contacts = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => navigate(`/chat/${contact.latest_session_id}`)}
+                        className="border-gray-600 text-blue-300 hover:bg-gray-800"
                       >
-                        <MessageSquare className="h-4 w-4 mr-2" />
+                        <MessageSquare className="h-4 w-4 mr-2 text-blue-300" />
                         View Chat
                       </Button>
                     )}
@@ -325,7 +330,7 @@ const Contacts = () => {
             ))}
             {filteredContacts.length === 0 && (
               <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
-                <h3 className="mt-2 text-lg font-medium">No contacts found</h3>
+                <h3 className="mt-2 text-lg font-medium text-gray-300">No contacts found</h3>
                 <p className="text-sm text-gray-500">Add a new contact or try a different search query</p>
               </div>
             )}
