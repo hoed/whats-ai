@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,16 +64,18 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-full max-w-md sm:max-w-lg p-4 sm:p-6 bg-white">
         <DialogHeader>
-          <DialogTitle>{isLogin ? 'Login' : 'Sign Up'}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-2xl sm:text-3xl text-gray-900">
+            {isLogin ? 'Login' : 'Sign Up'}
+          </DialogTitle>
+          <DialogDescription className="text-gray-600">
             {isLogin ? 'Welcome back!' : 'Create a new account'}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <div className="relative">
               <Input
                 id="email"
@@ -83,12 +84,13 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                className="bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-brand-blue focus:border-brand-blue"
               />
-              <User className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+              <User className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-gray-700">Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -97,29 +99,33 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
+                className="bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-brand-blue focus:border-brand-blue"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
+                  <EyeOff className="h-5 w-5 text-gray-500" />
                 ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
+                  <Eye className="h-5 w-5 text-gray-500" />
                 )}
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <Button 
+              type="submit" 
+              className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white"
+            >
               {isLogin ? 'Login' : 'Sign Up'}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsLogin(!isLogin)}
-              className="w-full"
+              className="w-full border-gray-300 text-gray-700 hover:bg-gray-100"
             >
               {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Login'}
             </Button>
