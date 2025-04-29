@@ -20,7 +20,7 @@ import {
   fetchStats
 } from '@/services/supabase';
 
-const Chats = () => {
+const Index = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -153,4 +153,4 @@ const Chats = () => {
   );
 };
 
-export default Chats;
+export default Index;

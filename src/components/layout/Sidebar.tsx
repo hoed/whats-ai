@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const isActive = (path: string) => location.pathname === path;
   
   const menuItems = [
-    { label: 'Chat Sessions', icon: <MessageSquare size={20} />, path: '/chats' },
+    { label: 'Chat Sessions', icon: <MessageSquare size={20} />, path: '/Index' },
     { label: 'Contacts', icon: <Users size={20} />, path: '/contacts' },
     { label: 'Templates', icon: <FileText size={20} />, path: '/templates' },
     { label: 'AI Profiles', icon: <Star size={20} />, path: '/ai-profiles' },
