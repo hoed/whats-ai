@@ -58,7 +58,7 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-5xl font-bold leading-tight">
-                <span className="block">Layanan Pelanggan</span>
+                <span className="block">Customer Service</span>
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Berbasis AI</span>
                 <span className="block">yang Canggih</span>
               </h2>
