@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import AuthDialog from '@/components/auth/AuthDialog';
 import Index from "./pages/Index";
 import Contacts from "./pages/Contacts";
-import Chats from "./pages/Chats";  // Fixed capital C
+import Chats from "./pages/Chats";
 import Templates from "./pages/Templates";
 import AIProfiles from "./pages/AIProfiles";
 import ChatDetail from "./pages/ChatDetail";
