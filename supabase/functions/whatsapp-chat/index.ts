@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -9,6 +8,7 @@ const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
 const geminiApiKey = Deno.env.get("GEMINI_API_KEY")!;
 const elevenlabsApiKey = Deno.env.get("ELEVENLABS_API_KEY")!;
 const whatsappToken = Deno.env.get("WHATSAPP_TOKEN")!;
+const whatsappKey = Deno.env.get("WHATSAPP_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,6 +46,7 @@ serve(async (req) => {
     const openaiKey = apiKeysMap['openai_key'] || openaiApiKey;
     const geminiKey = apiKeysMap['gemini_key'] || geminiApiKey;
     const elevenlabsKey = apiKeysMap['elevenlabs_key'] || elevenlabsApiKey;
+    const whatsappKey = apiKeysMap['whatsapp_key'] || whatsappToken;
     
     // Load training data from the database
     const { data: trainingData, error: trainingError } = await supabase

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Contact, Message, AIProfile, Template, ChatSession, Stats } from "@/types";
 
@@ -139,7 +138,7 @@ export const sendMessage = async (sessionId: string, content: string) => {
       role: 'ai',
       content,
       timestamp: new Date().toISOString(),
-      user_id: DEFAULT_USER_ID  // Add the required user_id field
+      user_id: DEFAULT_USER_ID
     });
   
   if (error) throw error;
@@ -221,4 +220,10 @@ export const getApiKeys = async () => {
   });
   
   return keysObject;
+};
+
+// Additional utility function to get the current user ID
+export const getCurrentUserId = () => {
+  // In a production app, this would come from auth state
+  return DEFAULT_USER_ID;
 };

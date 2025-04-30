@@ -92,9 +92,9 @@ const Chats = () => {
                 <p className="text-gray-500">Tidak ada percakapan yang ditemukan.</p>
               </div>
             ) : (
+              // We need to pass only sessions prop as that's what ChatSessionList expects
               <ChatSessionList 
                 sessions={filteredSessions} 
-                onSessionSelect={handleSessionSelect} 
               />
             )}
           </CardContent>
