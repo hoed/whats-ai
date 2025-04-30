@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -59,68 +60,68 @@ const Chats = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-green">
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
               Dashboard
             </h1>
-            <p className="text-gray-500">Welcome back to your WhatsApp Business Hub</p>
+            <p className="text-slate-400">Selamat datang di pusat kontrol WhatsApp Business</p>
           </div>
           <Button 
             onClick={() => navigate('/setup-whatsapp')}
-            className="bg-gradient-to-r from-brand-blue to-brand-green hover:opacity-90 transition-opacity"
+            className="bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 shadow-lg shadow-cyan-900/20"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Connect WhatsApp
+            Hubungkan WhatsApp
           </Button>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard 
-            title="Total Conversations" 
+            title="Total Percakapan" 
             value={stats?.total_conversations || 0}
-            icon={<MessageSquare className="h-4 w-4" />}
-            className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg hover:shadow-xl transition-shadow"
+            icon={<MessageSquare className="h-4 w-4 text-cyan-400" />}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-lg hover:shadow-xl transition-shadow border-b-4 border-b-cyan-600"
           />
           <StatCard 
-            title="Active Conversations" 
+            title="Percakapan Aktif" 
             value={stats?.active_conversations || 0}
-            icon={<UserCheck className="h-4 w-4" />}
-            className="bg-gradient-to-br from-green-50 to-emerald-50 border-none shadow-lg hover:shadow-xl transition-shadow"
+            icon={<UserCheck className="h-4 w-4 text-green-400" />}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-lg hover:shadow-xl transition-shadow border-b-4 border-b-green-600"
           />
           <StatCard 
-            title="Closed Conversations" 
+            title="Percakapan Selesai" 
             value={stats?.resolved_conversations || 0}
-            icon={<CheckCircle className="h-4 w-4" />}
-            className="bg-gradient-to-br from-blue-50 to-indigo-50 border-none shadow-lg hover:shadow-xl transition-shadow"
+            icon={<CheckCircle className="h-4 w-4 text-blue-400" />}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-lg hover:shadow-xl transition-shadow border-b-4 border-b-blue-600"
           />
           <StatCard 
-            title="New Contacts Today" 
+            title="Kontak Baru Hari Ini" 
             value={stats?.new_contacts_today || 0}
-            icon={<Clock className="h-4 w-4" />}
-            className="bg-gradient-to-br from-pink-50 to-rose-50 border-none shadow-lg hover:shadow-xl transition-shadow"
-            description="New customers in the last 24 hours"
+            icon={<Clock className="h-4 w-4 text-purple-400" />}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-lg hover:shadow-xl transition-shadow border-b-4 border-b-purple-600"
+            description="Pelanggan baru dalam 24 jam terakhir"
           />
         </div>
 
-        <div className="bg-white/50 backdrop-blur border rounded-lg shadow-lg">
-          <div className="p-4 border-b backdrop-blur">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 backdrop-blur border border-slate-700 rounded-lg shadow-lg">
+          <div className="p-4 border-b border-slate-700 backdrop-blur">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">Recent Conversations</h2>
+              <h2 className="text-lg font-medium text-cyan-400">Percakapan Terbaru</h2>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate('/chat')}
-                className="hover:bg-gray-100/50"
+                className="border-slate-600 hover:bg-slate-700 text-slate-300"
               >
-                View All
+                Lihat Semua
               </Button>
             </div>
             
             <div className="flex items-center space-x-2">
               <div className="relative flex-grow">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                 <Input
-                  placeholder="Search by name or phone number..."
-                  className="pl-8 bg-white/50 backdrop-blur border-gray-200"
+                  placeholder="Cari berdasarkan nama atau nomor telepon..."
+                  className="pl-8 bg-slate-700/50 backdrop-blur border-slate-600 focus:border-cyan-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -129,12 +130,12 @@ const Chats = () => {
           </div>
           
           <Tabs defaultValue="all" onValueChange={setStatusFilter}>
-            <div className="px-4 border-b backdrop-blur">
-              <TabsList className="w-full justify-start">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="open">Active</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-                <TabsTrigger value="closed">Closed</TabsTrigger>
+            <div className="px-4 border-b border-slate-700 backdrop-blur">
+              <TabsList className="w-full justify-start bg-slate-800">
+                <TabsTrigger value="all" className="data-[state=active]:bg-cyan-700 data-[state=active]:text-white">Semua</TabsTrigger>
+                <TabsTrigger value="open" className="data-[state=active]:bg-green-700 data-[state=active]:text-white">Aktif</TabsTrigger>
+                <TabsTrigger value="pending" className="data-[state=active]:bg-amber-700 data-[state=active]:text-white">Tertunda</TabsTrigger>
+                <TabsTrigger value="closed" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white">Ditutup</TabsTrigger>
               </TabsList>
             </div>
             

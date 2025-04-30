@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { Check } from 'lucide-react';
+import { Check, CircuitBoard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const GeminiAPIForm: React.FC = () => {
@@ -23,7 +23,7 @@ const GeminiAPIForm: React.FC = () => {
           .from('api_keys')
           .select('key_value')
           .eq('key_name', 'gemini_key')
-          .single();
+          .maybeSingle();
           
         if (error && error.code !== 'PGRST116') {
           console.error('Error fetching API key:', error);
@@ -103,15 +103,18 @@ const GeminiAPIForm: React.FC = () => {
   };
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>API Key Gemini</CardTitle>
-        <CardDescription>Diperlukan untuk percakapan AI yang menggunakan Gemini.</CardDescription>
+    <Card className="border-none bg-transparent">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-cyan-400 flex items-center gap-2">
+          <CircuitBoard className="h-5 w-5" />
+          API Key Gemini
+        </CardTitle>
+        <CardDescription className="text-slate-400">Diperlukan untuk percakapan AI yang menggunakan Gemini.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="gemini_key">Gemini API Key</Label>
+            <Label htmlFor="gemini_key" className="text-slate-300">Gemini API Key</Label>
             <div className="flex items-center">
               <Input
                 id="gemini_key"
@@ -119,19 +122,20 @@ const GeminiAPIForm: React.FC = () => {
                 placeholder="AIza..."
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
+                className="bg-slate-700 border-slate-600 focus:border-cyan-500"
               />
               <Button
                 type="button"
                 variant="outline"
-                className="ml-2"
+                className="ml-2 border-slate-600 hover:bg-slate-700 text-slate-300"
                 onClick={() => setIsVisible(!isVisible)}
               >
                 {isVisible ? "Sembunyikan" : "Tampilkan"}
               </Button>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-400">
               {isSaved ? (
-                <span className="flex items-center text-green-500">
+                <span className="flex items-center text-green-400">
                   <Check className="h-4 w-4 mr-1" /> API Key telah diatur
                 </span>
               ) : (
@@ -139,7 +143,13 @@ const GeminiAPIForm: React.FC = () => {
               )}
             </p>
           </div>
-          <Button onClick={handleSave} className="w-full" disabled={isLoading}>
+          <Button 
+            onClick={handleSave} 
+            className={`w-full ${isSaved 
+              ? 'bg-green-600 hover:bg-green-700' 
+              : 'bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600'}`} 
+            disabled={isLoading}
+          >
             {isLoading ? "Menyimpan..." : isSaved ? "Perbarui API Key" : "Simpan API Key"}
           </Button>
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -142,23 +143,41 @@ const ChatDetail = () => {
   // Mutation for sending a message
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const newMessageData: Omit<Message, 'id' | 'timestamp'> = {
-        contact_id: session!.contact_id,
+      if (!session?.contact_id) {
+        throw new Error('Contact ID not available');
+      }
+      
+      // First get the current user_id (for demo purposes, we'll use a fixed value)
+      // In a real app, you'd get this from authentication context
+      const user_id = "00000000-0000-0000-0000-000000000000"; 
+      
+      const newMessageData = {
+        contact_id: session.contact_id,
         role: 'ai',
         content,
         ai_profile_id: selectedAIProfile || null,
         template_id: selectedTemplate || null,
         training_data_id: selectedTrainingData || null,
+        user_id: user_id
       };
+      
       const { data, error } = await supabase
         .from('messages')
         .insert([newMessageData])
         .select()
         .single();
+      
       if (error) {
         console.error('Error sending message:', error);
         throw new Error(error.message);
       }
+      
+      // Update the last activity timestamp on the chat session
+      await supabase
+        .from('chat_sessions')
+        .update({ last_activity: new Date().toISOString() })
+        .eq('id', sessionId!);
+        
       return data;
     },
     onSuccess: () => {
@@ -167,13 +186,13 @@ const ChatDetail = () => {
       setSelectedTemplate(null);
       setSelectedTrainingData(null);
       toast({
-        title: "Message Sent",
-        description: "Your message has been sent successfully.",
+        title: "Pesan Terkirim",
+        description: "Pesan Anda telah berhasil dikirim.",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: "Kesalahan",
         description: error.message,
         variant: "destructive",
       });
@@ -205,10 +224,10 @@ const ChatDetail = () => {
     return (
       <DashboardLayout>
         <div className="text-center p-8">
-          <h2 className="text-lg font-medium">Invalid Chat Session ID</h2>
-          <p className="text-red-500">The provided session ID is not valid.</p>
+          <h2 className="text-lg font-medium">ID Sesi Chat Tidak Valid</h2>
+          <p className="text-red-500">ID sesi yang diberikan tidak valid.</p>
           <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
-            Back to Chats
+            Kembali ke Chat
           </Button>
         </div>
       </DashboardLayout>
@@ -229,12 +248,12 @@ const ChatDetail = () => {
     return (
       <DashboardLayout>
         <div className="text-center p-8">
-          <h2 className="text-lg font-medium">Error loading chat data</h2>
+          <h2 className="text-lg font-medium">Kesalahan memuat data chat</h2>
           <p className="text-red-500">
             {sessionError?.message || messagesError?.message || aiProfilesError?.message || templatesError?.message || trainingDataError?.message}
           </p>
           <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
-            Back to Chats
+            Kembali ke Chat
           </Button>
         </div>
       </DashboardLayout>
@@ -245,9 +264,9 @@ const ChatDetail = () => {
     return (
       <DashboardLayout>
         <div className="text-center p-8">
-          <h2 className="text-lg font-medium">Chat session not found</h2>
+          <h2 className="text-lg font-medium">Sesi chat tidak ditemukan</h2>
           <Button variant="outline" onClick={() => navigate('/')} className="mt-4">
-            Back to Chats
+            Kembali ke Chat
           </Button>
         </div>
       </DashboardLayout>
@@ -278,12 +297,16 @@ const ChatDetail = () => {
                   .eq('id', sessionId!);
                 if (error) {
                   toast({
-                    title: "Error",
+                    title: "Kesalahan",
                     description: error.message,
                     variant: "destructive",
                   });
                 } else {
                   queryClient.invalidateQueries({ queryKey: ['chatSession', sessionId] });
+                  toast({
+                    title: "Status Diperbarui",
+                    description: `Status percakapan diubah menjadi ${value}.`,
+                  });
                 }
               }}
             >
@@ -291,17 +314,20 @@ const ChatDetail = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="open">Aktif</SelectItem>
+                <SelectItem value="pending">Tertunda</SelectItem>
+                <SelectItem value="closed">Tutup</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <Card>
+        <Card className="bg-gradient-to-r from-slate-800 to-slate-900 border-slate-700 shadow-xl">
           <CardHeader>
-            <CardTitle>Messages</CardTitle>
+            <CardTitle className="text-cyan-400 flex items-center">
+              <span className="mr-2">Pesan</span>
+              <div className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[400px] pr-4">
@@ -315,21 +341,25 @@ const ChatDetail = () => {
                       message.role === 'ai' ? 'flex-row-reverse space-x-reverse' : ''
                     }`}
                   >
-                    <Avatar>
+                    <Avatar className={message.role === 'ai' ? 'border-2 border-cyan-500' : 'border-2 border-purple-500'}>
                       <AvatarImage src={message.role === 'ai' ? '/ai-avatar.png' : '/user-avatar.png'} />
-                      <AvatarFallback>{message.role === 'ai' ? 'AI' : 'U'}</AvatarFallback>
+                      <AvatarFallback className={message.role === 'ai' ? 'bg-cyan-900 text-cyan-200' : 'bg-purple-900 text-purple-200'}>
+                        {message.role === 'ai' ? 'AI' : 'U'}
+                      </AvatarFallback>
                     </Avatar>
                     <div
                       className={`rounded-lg p-3 ${
-                        message.role === 'ai' ? 'bg-primary text-primary-foreground' : 'bg-gray-200'
+                        message.role === 'ai' 
+                          ? 'bg-gradient-to-r from-cyan-800 to-blue-900 text-white border border-cyan-700' 
+                          : 'bg-gradient-to-r from-slate-700 to-slate-800 border border-slate-600'
                       }`}
                     >
                       <p>{message.content}</p>
                       {message.role === 'ai' && (
                         <div className="text-xs mt-1 opacity-70">
-                          {message.ai_profile && <span>Sent by {message.ai_profile.name} | </span>}
-                          {message.template && <span>Using template: {message.template.title} | </span>}
-                          {message.training_data && <span>Based on training: {message.training_data.title} | </span>}
+                          {message.ai_profile && <span>Dikirim oleh {message.ai_profile.name} | </span>}
+                          {message.template && <span>Menggunakan template: {message.template.title} | </span>}
+                          {message.training_data && <span>Berdasarkan training: {message.training_data.title} | </span>}
                           <span>{new Date(message.timestamp!).toLocaleTimeString()}</span>
                         </div>
                       )}
@@ -337,6 +367,16 @@ const ChatDetail = () => {
                   </div>
                 </div>
               ))}
+              
+              {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-[300px] text-slate-400">
+                  <div className="rounded-full bg-slate-800 p-6 mb-4 border border-slate-700">
+                    <Send className="h-8 w-8 text-cyan-400" />
+                  </div>
+                  <p className="text-lg">Belum ada pesan</p>
+                  <p className="text-sm">Mulai percakapan dengan mengirim pesan pertama</p>
+                </div>
+              )}
             </ScrollArea>
             <div className="flex flex-col space-y-2 mt-4">
               <div className="flex space-x-2">
@@ -344,10 +384,10 @@ const ChatDetail = () => {
                   value={selectedAIProfile || ''}
                   onValueChange={(value) => setSelectedAIProfile(value)}
                 >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select AI Profile" />
+                  <SelectTrigger className="w-[200px] bg-slate-800 border-slate-600">
+                    <SelectValue placeholder="Pilih Profil AI" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-slate-800 border-slate-600">
                     {aiProfiles.map((profile) => (
                       <SelectItem key={profile.id} value={profile.id}>
                         {profile.name}
@@ -359,10 +399,10 @@ const ChatDetail = () => {
                   value={selectedTemplate || ''}
                   onValueChange={(value) => handleApplyTemplate(value)}
                 >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select Template" />
+                  <SelectTrigger className="w-[200px] bg-slate-800 border-slate-600">
+                    <SelectValue placeholder="Pilih Template" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-slate-800 border-slate-600">
                     {templates.map((template) => (
                       <SelectItem key={template.id} value={template.id}>
                         {template.title}
@@ -374,10 +414,10 @@ const ChatDetail = () => {
                   value={selectedTrainingData || ''}
                   onValueChange={(value) => handleApplyTrainingData(value)}
                 >
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select Training Data" />
+                  <SelectTrigger className="w-[200px] bg-slate-800 border-slate-600">
+                    <SelectValue placeholder="Pilih Data Training" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-slate-800 border-slate-600">
                     {trainingData.map((training) => (
                       <SelectItem key={training.id} value={training.id}>
                         {training.title}
@@ -388,14 +428,16 @@ const ChatDetail = () => {
               </div>
               <div className="flex space-x-2">
                 <Input
-                  placeholder="Type a message..."
+                  placeholder="Ketik pesan..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  className="bg-slate-800 border-slate-600 focus:border-cyan-500"
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={sendMessageMutation.isPending || !newMessage.trim()}
+                  className="bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600"
                 >
                   {sendMessageMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

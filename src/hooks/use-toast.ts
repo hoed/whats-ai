@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -168,6 +169,14 @@ function toast({ ...props }: Toast) {
   }
 }
 
+type ToastContextType = {
+  toasts: ToasterToast[]
+  toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
+  dismiss: (toastId?: string) => void
+}
+
+const ToastContext = React.createContext<ToastContextType | null>(null)
+
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
@@ -182,7 +191,7 @@ function useToast() {
   }, [state])
 
   return {
-    ...state,
+    toasts: state.toasts,
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   }

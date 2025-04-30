@@ -12,29 +12,50 @@ export type Database = {
       ai_profiles: {
         Row: {
           ai_model: string | null
+          api_key_id: string | null
           created_at: string | null
           description: string | null
           id: string
           name: string
           prompt_system: string
+          user_id: string
         }
         Insert: {
           ai_model?: string | null
+          api_key_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
           prompt_system: string
+          user_id: string
         }
         Update: {
           ai_model?: string | null
+          api_key_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name?: string
           prompt_system?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_ai_profiles_api_keys"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_ai_profiles_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       api_keys: {
         Row: {
@@ -126,6 +147,7 @@ export type Database = {
           template_id: string | null
           timestamp: string | null
           training_data_id: string | null
+          user_id: string
         }
         Insert: {
           ai_profile_id?: string | null
@@ -136,6 +158,7 @@ export type Database = {
           template_id?: string | null
           timestamp?: string | null
           training_data_id?: string | null
+          user_id: string
         }
         Update: {
           ai_profile_id?: string | null
@@ -146,8 +169,16 @@ export type Database = {
           template_id?: string | null
           timestamp?: string | null
           training_data_id?: string | null
+          user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_messages_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_ai_profile_id_fkey"
             columns: ["ai_profile_id"]
@@ -180,54 +211,96 @@ export type Database = {
       }
       templates: {
         Row: {
+          api_key_id: string | null
           content: string
           created_at: string | null
           id: string
           tags: string[] | null
           title: string
+          user_id: string | null
         }
         Insert: {
+          api_key_id?: string | null
           content: string
           created_at?: string | null
           id?: string
           tags?: string[] | null
           title: string
+          user_id?: string | null
         }
         Update: {
+          api_key_id?: string | null
           content?: string
           created_at?: string | null
           id?: string
           tags?: string[] | null
           title?: string
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_templates_api_keys"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_templates_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       training_data: {
         Row: {
+          api_key_id: string | null
           category: string | null
           content: string
           created_at: string | null
           id: string
           title: string
           updated_at: string | null
+          user_id: string
         }
         Insert: {
+          api_key_id?: string | null
           category?: string | null
           content: string
           created_at?: string | null
           id?: string
           title: string
           updated_at?: string | null
+          user_id: string
         }
         Update: {
+          api_key_id?: string | null
           category?: string | null
           content?: string
           created_at?: string | null
           id?: string
           title?: string
           updated_at?: string | null
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_training_data_api_keys"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_training_data_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_settings: {
         Row: {
@@ -253,6 +326,33 @@ export type Database = {
           notifications?: boolean | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          contact: string | null
+          created_at: string | null
+          email: string
+          id: string
+          role: string
+          stripe_customer_id: string | null
+        }
+        Insert: {
+          contact?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          role?: string
+          stripe_customer_id?: string | null
+        }
+        Update: {
+          contact?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          role?: string
+          stripe_customer_id?: string | null
         }
         Relationships: []
       }

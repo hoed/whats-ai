@@ -8,6 +8,7 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
 const geminiApiKey = Deno.env.get("GEMINI_API_KEY")!;
 const elevenlabsApiKey = Deno.env.get("ELEVENLABS_API_KEY")!;
+const whatsappToken = Deno.env.get("WHATSAPP_TOKEN")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,6 +27,26 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
+    // Load API keys from the database
+    const { data: apiKeys, error: apiKeysError } = await supabase
+      .from('api_keys')
+      .select('key_name, key_value');
+    
+    if (apiKeysError) {
+      throw new Error(`Error fetching API keys: ${apiKeysError.message}`);
+    }
+    
+    // Create a map of API keys
+    const apiKeysMap = apiKeys.reduce((acc, item) => {
+      acc[item.key_name] = item.key_value;
+      return acc;
+    }, {} as Record<string, string>);
+    
+    // Use API keys from database if available, otherwise use environment variables
+    const openaiKey = apiKeysMap['openai_key'] || openaiApiKey;
+    const geminiKey = apiKeysMap['gemini_key'] || geminiApiKey;
+    const elevenlabsKey = apiKeysMap['elevenlabs_key'] || elevenlabsApiKey;
+    
     // Load training data from the database
     const { data: trainingData, error: trainingError } = await supabase
       .from('training_data')
@@ -43,7 +64,7 @@ serve(async (req) => {
       .from('chat_sessions')
       .select('*')
       .eq('id', sessionId)
-      .single();
+      .maybeSingle();
     
     if (sessionError && sessionError.code !== 'PGRST116') {
       throw new Error(`Error fetching session: ${sessionError.message}`);
@@ -78,7 +99,7 @@ serve(async (req) => {
         .from('ai_profiles')
         .select('prompt_system, ai_model')
         .eq('id', sessionData.ai_profile_id)
-        .single();
+        .maybeSingle();
       
       if (profileError && profileError.code !== 'PGRST116') {
         throw new Error(`Error fetching AI profile: ${profileError.message}`);
@@ -98,13 +119,13 @@ serve(async (req) => {
     let aiReply;
     
     // Choose AI model based on profile setting
-    if (aiModel === 'gemini') {
+    if (aiModel === 'gemini' && geminiKey) {
       // Use Gemini model
       const geminiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey
+          "x-goog-api-key": geminiKey
         },
         body: JSON.stringify({
           contents: [
@@ -142,12 +163,12 @@ serve(async (req) => {
       const aiResult = await geminiResponse.json();
       aiReply = aiResult.candidates[0].content.parts[0].text;
       
-    } else {
+    } else if (openaiKey) {
       // Use OpenAI model (default)
       const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${openaiApiKey}`,
+          "Authorization": `Bearer ${openaiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -170,7 +191,12 @@ serve(async (req) => {
       
       const aiResult = await openaiResponse.json();
       aiReply = aiResult.choices[0].message.content;
+    } else {
+      throw new Error("No valid AI model API key available");
     }
+    
+    // Get user_id (in a real app, this would come from auth)
+    const user_id = "00000000-0000-0000-0000-000000000000"; // Placeholder
     
     // Store the user message and AI reply in the database
     const { error: insertUserError } = await supabase
@@ -179,6 +205,7 @@ serve(async (req) => {
         contact_id: contactId,
         role: 'user',
         content: message,
+        user_id: user_id
       });
     
     if (insertUserError) {
@@ -192,6 +219,7 @@ serve(async (req) => {
         role: 'ai',
         content: aiReply,
         ai_profile_id: sessionData?.ai_profile_id || null,
+        user_id: user_id
       });
     
     if (insertAIError) {
@@ -208,42 +236,44 @@ serve(async (req) => {
       throw new Error(`Error updating session: ${updateError.message}`);
     }
     
-    // Generate speech from text using ElevenLabs if needed
+    // Generate speech from text using ElevenLabs if API key is available
     let audioUrl = null;
-    try {
-      const voiceId = "EXAVITQu4vr4xnSDxMaL"; // Sarah voice
-      
-      const elevenlabsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-        method: "POST",
-        headers: {
-          "xi-api-key": elevenlabsApiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: aiReply,
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.8,
-          }
-        }),
-      });
-      
-      if (elevenlabsResponse.ok) {
-        // Convert audio to base64
-        const audioBlob = await elevenlabsResponse.blob();
-        const audioBuffer = await audioBlob.arrayBuffer();
-        const audioBase64 = btoa(
-          String.fromCharCode(...new Uint8Array(audioBuffer))
-        );
+    if (elevenlabsKey) {
+      try {
+        const voiceId = "EXAVITQu4vr4xnSDxMaL"; // Sarah voice
         
-        audioUrl = `data:audio/mpeg;base64,${audioBase64}`;
-      } else {
-        console.error("Error from ElevenLabs API:", await elevenlabsResponse.text());
+        const elevenlabsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+          method: "POST",
+          headers: {
+            "xi-api-key": elevenlabsKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: aiReply,
+            model_id: "eleven_multilingual_v2",
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.8,
+            }
+          }),
+        });
+        
+        if (elevenlabsResponse.ok) {
+          // Convert audio to base64
+          const audioBlob = await elevenlabsResponse.blob();
+          const audioBuffer = await audioBlob.arrayBuffer();
+          const audioBase64 = btoa(
+            String.fromCharCode(...new Uint8Array(audioBuffer))
+          );
+          
+          audioUrl = `data:audio/mpeg;base64,${audioBase64}`;
+        } else {
+          console.error("Error from ElevenLabs API:", await elevenlabsResponse.text());
+        }
+      } catch (error) {
+        console.error("Error generating speech:", error);
+        // Continue without audio if there's an error
       }
-    } catch (error) {
-      console.error("Error generating speech:", error);
-      // Continue without audio if there's an error
     }
     
     return new Response(
