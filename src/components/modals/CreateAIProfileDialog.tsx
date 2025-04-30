@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -49,6 +48,10 @@ export default function CreateAIProfileDialog({
     try {
       setIsLoading(true);
       
+      // Use a placeholder user_id for demo purposes
+      // In a real app, this would come from your auth context
+      const user_id = "00000000-0000-0000-0000-000000000000";
+      
       const { error } = await supabase
         .from('ai_profiles')
         .insert({
@@ -56,6 +59,7 @@ export default function CreateAIProfileDialog({
           description: profile.description || null,
           prompt_system: profile.prompt_system,
           ai_model: profile.ai_model,
+          user_id: user_id, // Add required user_id field
         });
 
       if (error) throw error;

@@ -169,15 +169,15 @@ function toast({ ...props }: Toast) {
   }
 }
 
-type ToastContextType = {
-  toasts: ToasterToast[]
-  toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
-  dismiss: (toastId?: string) => void
-}
+// Create a context to hold toast state
+const ToastContext = React.createContext<{
+  toasts: ToasterToast[];
+  toast: typeof toast;
+  dismiss: (toastId?: string) => void;
+} | null>(null);
 
-const ToastContext = React.createContext<ToastContextType | null>(null)
-
-function useToast() {
+// Create Provider component
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = React.useState<State>(memoryState)
 
   React.useEffect(() => {
@@ -190,11 +190,29 @@ function useToast() {
     }
   }, [state])
 
-  return {
-    toasts: state.toasts,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
+  return (
+    <ToastContext.Provider
+      value={{
+        toasts: state.toasts,
+        toast,
+        dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+      }}
+    >
+      {children}
+    </ToastContext.Provider>
+  )
 }
 
-export { useToast, toast }
+// Export useToast hook that uses the context
+export function useToast() {
+  const context = React.useContext(ToastContext)
+  
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider")
+  }
+  
+  return context
+}
+
+// Also export standalone toast function for non-component usage
+export { toast }

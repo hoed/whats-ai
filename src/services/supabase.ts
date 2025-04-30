@@ -2,6 +2,10 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Contact, Message, AIProfile, Template, ChatSession, Stats } from "@/types";
 
+// Default user_id for development purposes
+// In a real app, you'd get this from authentication context
+const DEFAULT_USER_ID = "00000000-0000-0000-0000-000000000000";
+
 // Contacts
 export const fetchContacts = async () => {
   const { data, error } = await supabase
@@ -134,7 +138,8 @@ export const sendMessage = async (sessionId: string, content: string) => {
       contact_id: session.contact_id,
       role: 'ai',
       content,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      user_id: DEFAULT_USER_ID  // Add the required user_id field
     });
   
   if (error) throw error;
@@ -144,4 +149,76 @@ export const sendMessage = async (sessionId: string, content: string) => {
     .from('chat_sessions')
     .update({ last_activity: new Date().toISOString() })
     .eq('id', sessionId);
+};
+
+// Create user settings if they don't exist
+export const syncUserSettings = async (userId: string) => {
+  const { data: existingSettings, error: checkError } = await supabase
+    .from('user_settings')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (checkError) throw checkError;
+
+  if (!existingSettings) {
+    const { error: insertError } = await supabase
+      .from('user_settings')
+      .insert([
+        { 
+          user_id: userId,
+          dark_mode: false,
+          notifications: true,
+          language: 'id'  // Default to Indonesian
+        }
+      ]);
+    
+    if (insertError) throw insertError;
+  }
+};
+
+// Save API Keys
+export const saveApiKey = async (keyName: string, keyValue: string) => {
+  // Check if this key already exists
+  const { data: existingKey, error: checkError } = await supabase
+    .from('api_keys')
+    .select('*')
+    .eq('key_name', keyName)
+    .maybeSingle();
+
+  if (checkError) throw checkError;
+
+  if (existingKey) {
+    // Update existing key
+    const { error } = await supabase
+      .from('api_keys')
+      .update({ key_value: keyValue })
+      .eq('id', existingKey.id);
+    if (error) throw error;
+  } else {
+    // Create new key
+    const { error } = await supabase
+      .from('api_keys')
+      .insert([
+        { key_name: keyName, key_value: keyValue }
+      ]);
+    if (error) throw error;
+  }
+};
+
+// Get API Keys
+export const getApiKeys = async () => {
+  const { data, error } = await supabase
+    .from('api_keys')
+    .select('key_name, key_value');
+  
+  if (error) throw error;
+  
+  // Convert to an easy-to-use object
+  const keysObject: Record<string, string> = {};
+  data.forEach(item => {
+    keysObject[item.key_name] = item.key_value;
+  });
+  
+  return keysObject;
 };
