@@ -50,8 +50,13 @@ export const useUserService = () => {
   const { user } = useAuth();
   const userId = user?.id || DEFAULT_USER_ID;
   
+  // Type for valid table names in our Supabase schema
+  type TableName = "ai_profiles" | "api_keys" | "users" | "chat_sessions" | 
+                   "contacts" | "messages" | "templates" | "training_data" | 
+                   "user_settings";
+  
   const createEntity = async <T extends { user_id?: string }>(
-    table: string, 
+    table: TableName, 
     data: Omit<T, 'user_id'>
   ) => {
     // Add user_id to the data

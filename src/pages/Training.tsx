@@ -155,7 +155,16 @@ const Training = () => {
       return;
     }
 
-    createMutation.mutate(newTrainingData);
+    // Default user ID for development purposes - in a real app, get from auth context
+    const user_id = "00000000-0000-0000-0000-000000000000";
+
+    createMutation.mutate({
+      title: newTrainingData.title,
+      content: newTrainingData.content,
+      category: newTrainingData.category,
+      user_id: user_id,
+      api_key_id: null // Set to null if not specified
+    });
   };
 
   const handleDeleteTrainingData = (id: string) => {
