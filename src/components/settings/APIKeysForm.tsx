@@ -6,10 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import APIKeyForm from '@/components/settings/APIKeyForm';
 import { useToast } from '@/components/ui/use-toast';
 import { getApiKeys, saveApiKey } from '@/services/supabase';
+import { Database } from '@/integrations/supabase/types';
+
+type ApiKeyRecord = Record<string, { value: string; type: string }>;
 
 const APIKeysForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [apiKeys, setApiKeys] = useState<ApiKeyRecord>({});
   const { toast } = useToast();
 
   // Load API keys from Supabase on component mount
@@ -34,14 +37,22 @@ const APIKeysForm = () => {
   }, [toast]);
 
   const handleSaveApiKey = async (keyName: string, keyValue: string) => {
+    // Extract the key type from the key name
+    let keyType: Database['public']['Enums']['api_key_type'] = 'openai';
+    
+    if (keyName === 'whatsapp_key') keyType = 'whatsapp';
+    else if (keyName === 'openai_key') keyType = 'openai';
+    else if (keyName === 'gemini_key') keyType = 'gemini';
+    else if (keyName === 'elevenlabs_key') keyType = 'elevenlabs';
+    
     try {
       setIsLoading(true);
-      await saveApiKey(keyName, keyValue);
+      await saveApiKey(keyName, keyValue, keyType);
       
       // Update local state
       setApiKeys(prev => ({
         ...prev,
-        [keyName]: keyValue
+        [keyName]: { value: keyValue, type: keyType }
       }));
       
       toast({
@@ -83,7 +94,7 @@ const APIKeysForm = () => {
               apiKeyLabel="WhatsApp Business API Token"
               apiKeyName="whatsapp_key"
               apiKeyPlaceholder="Enter your WhatsApp Business API Token"
-              initialValue={apiKeys['whatsapp_key'] || ''}
+              initialValue={apiKeys['whatsapp_key']?.value || ''}
               onSave={(key) => handleSaveApiKey('whatsapp_key', key)}
               isLoading={isLoading}
             />
@@ -96,7 +107,7 @@ const APIKeysForm = () => {
               apiKeyLabel="OpenAI API Key"
               apiKeyName="openai_key"
               apiKeyPlaceholder="sk-..."
-              initialValue={apiKeys['openai_key'] || ''}
+              initialValue={apiKeys['openai_key']?.value || ''}
               onSave={(key) => handleSaveApiKey('openai_key', key)}
               isLoading={isLoading}
             />
@@ -109,7 +120,7 @@ const APIKeysForm = () => {
               apiKeyLabel="Gemini API Key"
               apiKeyName="gemini_key"
               apiKeyPlaceholder="Enter your Gemini API Key"
-              initialValue={apiKeys['gemini_key'] || ''}
+              initialValue={apiKeys['gemini_key']?.value || ''}
               onSave={(key) => handleSaveApiKey('gemini_key', key)}
               isLoading={isLoading}
             />
@@ -122,7 +133,7 @@ const APIKeysForm = () => {
               apiKeyLabel="ElevenLabs API Key"
               apiKeyName="elevenlabs_key"
               apiKeyPlaceholder="Enter your ElevenLabs API Key"
-              initialValue={apiKeys['elevenlabs_key'] || ''}
+              initialValue={apiKeys['elevenlabs_key']?.value || ''}
               onSave={(key) => handleSaveApiKey('elevenlabs_key', key)}
               isLoading={isLoading}
             />

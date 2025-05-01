@@ -3,10 +3,14 @@ import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GeneralSettingsForm from '@/components/settings/GeneralSettingsForm';
-import GeminiAPIForm from '@/components/settings/GeminiAPIForm';
 import APIKeysForm from '@/components/settings/APIKeysForm';
+import { Button } from '@/components/ui/button';
+import { Mic } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
+  const navigate = useNavigate();
+
   return (
     <DashboardLayout>
       <div className="space-y-6 bg-gradient-to-br from-blue-900/20 to-purple-900/20 p-6 rounded-lg backdrop-blur-sm">
@@ -21,6 +25,17 @@ const Settings = () => {
             <TabsTrigger value="api">API Keys</TabsTrigger>
             <TabsTrigger value="advanced">Advanced</TabsTrigger>
           </TabsList>
+          
+          <div className="flex justify-end mt-4">
+            <Button 
+              onClick={() => navigate('/voice-settings')}
+              variant="outline" 
+              className="flex items-center gap-2 bg-blue-900/20 hover:bg-blue-900/30 border-blue-700/30"
+            >
+              <Mic className="h-4 w-4" />
+              Voice Settings
+            </Button>
+          </div>
           
           <TabsContent value="general" className="mt-6">
             <GeneralSettingsForm />

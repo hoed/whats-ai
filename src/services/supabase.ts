@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Contact, Message, AIProfile, Template, ChatSession, Stats } from "@/types";
+import { Database } from "@/integrations/supabase/types";
 
 // Default user_id for development purposes
 // In a real app, you'd get this from authentication context
@@ -178,7 +179,11 @@ export const syncUserSettings = async (userId: string) => {
 };
 
 // Save API Keys with type
-export const saveApiKey = async (keyName: string, keyValue: string, keyType: 'whatsapp' | 'openai' | 'gemini' | 'elevenlabs') => {
+export const saveApiKey = async (
+  keyName: string, 
+  keyValue: string, 
+  keyType: Database['public']['Enums']['api_key_type']
+) => {
   // Check if this key already exists
   const { data: existingKey, error: checkError } = await supabase
     .from('api_keys')
