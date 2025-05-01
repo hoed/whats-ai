@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             <Menu className="h-5 w-5" />
           </Button>
           <button 
-            onClick={() => navigate('/')} 
+            onClick={() => navigate('/dashboard')} 
             className="flex items-center"
           >
             <span className="text-brand-blue text-lg sm:text-xl font-bold">AI</span>
