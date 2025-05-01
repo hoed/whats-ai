@@ -19,6 +19,21 @@ interface VoiceSettings {
   similarity_boost: number;
 }
 
+interface UserSettings {
+  dark_mode?: boolean;
+  id?: string;
+  language?: string;
+  notifications?: boolean;
+  updated_at?: string;
+  user_id?: string;
+  voice_id?: string;
+  voice_model?: string;
+  ai_provider?: 'openai' | 'gemini';
+  auto_voice_responses?: boolean;
+  stability?: number;
+  similarity_boost?: number;
+}
+
 const predefinedVoices = [
   { id: 'TX3LPaxmHKxFdv7VOQHJ', name: 'Liam', description: 'Confident and Friendly Male' },
   { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', description: 'Professional Female' },
@@ -60,9 +75,9 @@ const VoiceSettingsForm = () => {
             voice_id: data.voice_id || 'TX3LPaxmHKxFdv7VOQHJ',
             voice_model: data.voice_model || 'eleven_multilingual_v2',
             ai_provider: (data.ai_provider as 'openai' | 'gemini') || 'openai',
-            auto_voice_responses: data.auto_voice_responses || true,
-            stability: data.stability || 0.5,
-            similarity_boost: data.similarity_boost || 0.5,
+            auto_voice_responses: data.auto_voice_responses !== undefined ? data.auto_voice_responses : true,
+            stability: data.stability !== undefined ? data.stability : 0.5,
+            similarity_boost: data.similarity_boost !== undefined ? data.similarity_boost : 0.5,
           });
         }
       } catch (error) {
