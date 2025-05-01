@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Play } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface VoiceSettings {
@@ -71,13 +71,14 @@ const VoiceSettingsForm = () => {
         if (error) throw error;
         
         if (data) {
+          // Handle case where the table doesn't have these columns yet
           setSettings({
-            voice_id: data.voice_id || 'TX3LPaxmHKxFdv7VOQHJ',
-            voice_model: data.voice_model || 'eleven_multilingual_v2',
-            ai_provider: (data.ai_provider as 'openai' | 'gemini') || 'openai',
-            auto_voice_responses: data.auto_voice_responses !== undefined ? data.auto_voice_responses : true,
-            stability: data.stability !== undefined ? data.stability : 0.5,
-            similarity_boost: data.similarity_boost !== undefined ? data.similarity_boost : 0.5,
+            voice_id: data.voice_id || settings.voice_id,
+            voice_model: data.voice_model || settings.voice_model,
+            ai_provider: (data.ai_provider as 'openai' | 'gemini') || settings.ai_provider,
+            auto_voice_responses: data.auto_voice_responses !== undefined ? data.auto_voice_responses : settings.auto_voice_responses,
+            stability: data.stability !== undefined ? data.stability : settings.stability,
+            similarity_boost: data.similarity_boost !== undefined ? data.similarity_boost : settings.similarity_boost,
           });
         }
       } catch (error) {

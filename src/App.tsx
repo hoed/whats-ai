@@ -8,7 +8,6 @@ import Index from '@/pages/Index';
 import Dashboard from '@/pages/Dashboard';
 import Auth from '@/pages/Auth';
 import NotFound from '@/pages/NotFound';
-import LandingPage from '@/pages/LandingPage';
 import Chats from '@/pages/Chats';
 import ChatDetail from '@/pages/ChatDetail';
 import Contacts from '@/pages/Contacts';
@@ -26,6 +25,7 @@ import { Toaster } from '@/components/ui/toaster';
 
 // Context
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider } from '@/hooks/use-toast';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -41,27 +41,28 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/chats" element={<Chats />} />
-            <Route path="/chats/:id" element={<ChatDetail />} />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="/ai-profiles" element={<AIProfiles />} />
-            <Route path="/templates" element={<Templates />} />
-            <Route path="/training" element={<Training />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/voice-settings" element={<VoiceSettings />} />
-            <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
-            <Route path="/manual" element={<Manual />} />
-            <Route path="/app" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-        <Toaster />
+        <ToastProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/chats" element={<Chats />} />
+              <Route path="/chats/:id" element={<ChatDetail />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/ai-profiles" element={<AIProfiles />} />
+              <Route path="/templates" element={<Templates />} />
+              <Route path="/training" element={<Training />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/voice-settings" element={<VoiceSettings />} />
+              <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
+              <Route path="/manual" element={<Manual />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <Toaster />
+        </ToastProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
