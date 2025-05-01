@@ -4,23 +4,27 @@ project_id = "fxufbwrahxcuxjojwnid"
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "storage"]
+schemas = ["public", "storage", "graphql_public"]
 
 [db]
 port = 54322
 
-[realtime]
-enabled = true
-
 [studio]
 enabled = true
 port = 54323
+api_url = "http://localhost"
 
-[[functions]]
-verify_jwt = true
-name = "whatsapp-chat"
+[inbucket]
+enabled = true
+port = 54324
 
-[[functions]]
-verify_jwt = true
-name = "gemini-chat"
+[storage]
+enabled = true
 
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+[functions]
+[functions.whatsapp-chat]
+verify_jwt = false

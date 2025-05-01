@@ -62,18 +62,21 @@ export type Database = {
           created_at: string | null
           id: string
           key_name: string
+          key_type: Database["public"]["Enums"]["api_key_type"] | null
           key_value: string
         }
         Insert: {
           created_at?: string | null
           id?: string
           key_name: string
+          key_type?: Database["public"]["Enums"]["api_key_type"] | null
           key_value: string
         }
         Update: {
           created_at?: string | null
           id?: string
           key_name?: string
+          key_type?: Database["public"]["Enums"]["api_key_type"] | null
           key_value?: string
         }
         Relationships: []
@@ -364,6 +367,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      api_key_type: "whatsapp" | "openai" | "gemini" | "elevenlabs"
       session_status: "open" | "pending" | "closed"
     }
     CompositeTypes: {
@@ -480,6 +484,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      api_key_type: ["whatsapp", "openai", "gemini", "elevenlabs"],
       session_status: ["open", "pending", "closed"],
     },
   },

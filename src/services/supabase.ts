@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Contact, Message, AIProfile, Template, ChatSession, Stats } from "@/types";
 
@@ -176,8 +177,8 @@ export const syncUserSettings = async (userId: string) => {
   }
 };
 
-// Save API Keys
-export const saveApiKey = async (keyName: string, keyValue: string) => {
+// Save API Keys with type
+export const saveApiKey = async (keyName: string, keyValue: string, keyType: 'whatsapp' | 'openai' | 'gemini' | 'elevenlabs') => {
   // Check if this key already exists
   const { data: existingKey, error: checkError } = await supabase
     .from('api_keys')
@@ -191,7 +192,10 @@ export const saveApiKey = async (keyName: string, keyValue: string) => {
     // Update existing key
     const { error } = await supabase
       .from('api_keys')
-      .update({ key_value: keyValue })
+      .update({ 
+        key_value: keyValue,
+        key_type: keyType
+      })
       .eq('id', existingKey.id);
     if (error) throw error;
   } else {
@@ -199,7 +203,11 @@ export const saveApiKey = async (keyName: string, keyValue: string) => {
     const { error } = await supabase
       .from('api_keys')
       .insert([
-        { key_name: keyName, key_value: keyValue }
+        { 
+          key_name: keyName, 
+          key_value: keyValue,
+          key_type: keyType
+        }
       ]);
     if (error) throw error;
   }
@@ -209,14 +217,17 @@ export const saveApiKey = async (keyName: string, keyValue: string) => {
 export const getApiKeys = async () => {
   const { data, error } = await supabase
     .from('api_keys')
-    .select('key_name, key_value');
+    .select('key_name, key_value, key_type');
   
   if (error) throw error;
   
   // Convert to an easy-to-use object
-  const keysObject: Record<string, string> = {};
+  const keysObject: Record<string, {value: string, type: string}> = {};
   data.forEach(item => {
-    keysObject[item.key_name] = item.key_value;
+    keysObject[item.key_name] = {
+      value: item.key_value,
+      type: item.key_type
+    };
   });
   
   return keysObject;

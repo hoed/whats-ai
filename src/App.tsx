@@ -49,8 +49,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const { showAuthDialog, setShowAuthDialog } = useAuth();
-
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
@@ -150,7 +148,7 @@ const App = () => {
                 {/* Not Found Route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+              <AuthDialog isOpen={false} onClose={() => {}} />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

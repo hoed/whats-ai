@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -48,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             <Menu className="h-5 w-5" />
           </Button>
           <button 
-            onClick={() => navigate('/dashboard')} 
+            onClick={() => navigate('/')} 
             className="flex items-center"
           >
             <span className="text-brand-blue text-lg sm:text-xl font-bold">AI</span>

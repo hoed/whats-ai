@@ -31,10 +31,6 @@ const Chats = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleSessionSelect = (sessionId: string) => {
-    navigate(`/chat/${sessionId}`);
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-4">
@@ -79,24 +75,10 @@ const Chats = () => {
             <CardTitle>Daftar Percakapan</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-              </div>
-            ) : error ? (
-              <div className="py-8 text-center">
-                <p className="text-red-500">Terjadi kesalahan saat memuat data percakapan.</p>
-              </div>
-            ) : filteredSessions.length === 0 ? (
-              <div className="py-8 text-center">
-                <p className="text-gray-500">Tidak ada percakapan yang ditemukan.</p>
-              </div>
-            ) : (
-              <ChatSessionList 
-                sessions={filteredSessions} 
-                isLoading={false} // Pass the required isLoading prop
-              />
-            )}
+            <ChatSessionList 
+              sessions={filteredSessions} 
+              isLoading={isLoading} 
+            />
           </CardContent>
         </Card>
       </div>
