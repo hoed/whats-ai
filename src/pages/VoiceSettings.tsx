@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import VoiceSettingsForm from '@/components/settings/VoiceSettingsForm';
@@ -21,20 +20,20 @@ const VoiceSettings = () => {
   
   return (
     <DashboardLayout>
-      <div className="space-y-6 bg-gradient-to-br from-blue-900/20 to-purple-900/20 p-6 rounded-lg backdrop-blur-sm">
+      <div className="space-y-6 bg-gray-800 p-6 rounded-lg">
         <div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Voice Settings</h1>
-          <p className="text-gray-400">Configure how your AI assistant speaks in WhatsApp calls.</p>
+          <h1 className="text-2xl font-bold text-white">Voice Settings</h1>
+          <p className="text-gray-300">Configure how your AI assistant speaks in WhatsApp calls.</p>
         </div>
         
         {!hasElevenLabsKey || !hasAIProviderKey ? (
-          <Card className="border-amber-500/30 bg-amber-950/10">
+          <Card className="border-amber-700 bg-gray-900">
             <CardHeader>
-              <CardTitle className="flex items-center text-amber-400">
+              <CardTitle className="flex items-center text-amber-500">
                 <AlertCircle className="h-5 w-5 mr-2" />
                 Missing API Keys
               </CardTitle>
-              <CardDescription className="text-amber-300/70">
+              <CardDescription className="text-amber-400">
                 {!hasElevenLabsKey && !hasAIProviderKey ? (
                   "You need to set up both ElevenLabs and an AI provider (OpenAI or Gemini) API keys first."
                 ) : !hasElevenLabsKey ? (
@@ -45,12 +44,12 @@ const VoiceSettings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-amber-300/70 mb-4">
+              <p className="text-sm text-amber-400 mb-4">
                 Go to API Keys settings to add the required keys before configuring voice settings.
               </p>
               <button 
                 onClick={() => window.location.href = '/settings?tab=api'}
-                className="bg-amber-800/30 hover:bg-amber-800/50 text-amber-300 px-4 py-2 rounded-md text-sm"
+                className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-md text-sm"
               >
                 Go to API Keys Settings
               </button>
