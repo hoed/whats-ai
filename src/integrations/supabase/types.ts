@@ -307,28 +307,46 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          ai_provider: string | null
+          auto_voice_responses: boolean | null
           dark_mode: boolean | null
           id: string
           language: string | null
           notifications: boolean | null
+          similarity_boost: number | null
+          stability: number | null
           updated_at: string | null
           user_id: string | null
+          voice_id: string | null
+          voice_model: string | null
         }
         Insert: {
+          ai_provider?: string | null
+          auto_voice_responses?: boolean | null
           dark_mode?: boolean | null
           id?: string
           language?: string | null
           notifications?: boolean | null
+          similarity_boost?: number | null
+          stability?: number | null
           updated_at?: string | null
           user_id?: string | null
+          voice_id?: string | null
+          voice_model?: string | null
         }
         Update: {
+          ai_provider?: string | null
+          auto_voice_responses?: boolean | null
           dark_mode?: boolean | null
           id?: string
           language?: string | null
           notifications?: boolean | null
+          similarity_boost?: number | null
+          stability?: number | null
           updated_at?: string | null
           user_id?: string | null
+          voice_id?: string | null
+          voice_model?: string | null
         }
         Relationships: []
       }

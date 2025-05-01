@@ -11,7 +11,8 @@ import {
   Star,
   BookOpen,
   X,
-  BookMarked
+  BookMarked,
+  Mic
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -33,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'Training', icon: <BookOpen size={20} />, path: '/training' },
     { label: 'Analytics', icon: <BarChart2 size={20} />, path: '/analytics' },
     { label: 'Manual', icon: <BookMarked size={20} />, path: '/manual' },
+    { label: 'Voice Settings', icon: <Mic size={20} />, path: '/voice-settings' },
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
   

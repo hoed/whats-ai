@@ -9,6 +9,12 @@ interface UserSettings {
   dark_mode: boolean;
   notifications: boolean;
   language: string;
+  voice_id?: string;
+  voice_model?: string;
+  ai_provider?: 'openai' | 'gemini';
+  auto_voice_responses?: boolean;
+  stability?: number;
+  similarity_boost?: number;
 }
 
 export function useUserSettings() {
@@ -18,6 +24,12 @@ export function useUserSettings() {
     dark_mode: false,
     notifications: true,
     language: 'id',
+    voice_id: 'TX3LPaxmHKxFdv7VOQHJ',
+    voice_model: 'eleven_multilingual_v2',
+    ai_provider: 'openai',
+    auto_voice_responses: true,
+    stability: 0.5,
+    similarity_boost: 0.5,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,6 +61,12 @@ export function useUserSettings() {
             dark_mode: data.dark_mode || false,
             notifications: data.notifications || true,
             language: data.language || 'id',
+            voice_id: data.voice_id || 'TX3LPaxmHKxFdv7VOQHJ',
+            voice_model: data.voice_model || 'eleven_multilingual_v2',
+            ai_provider: (data.ai_provider as 'openai' | 'gemini') || 'openai',
+            auto_voice_responses: data.auto_voice_responses !== undefined ? data.auto_voice_responses : true,
+            stability: data.stability !== undefined ? Number(data.stability) : 0.5,
+            similarity_boost: data.similarity_boost !== undefined ? Number(data.similarity_boost) : 0.5,
           });
         }
       } catch (error: any) {
