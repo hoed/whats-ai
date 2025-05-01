@@ -31,9 +31,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'Contacts', icon: <Users size={20} />, path: '/contacts' },
     { label: 'Templates', icon: <FileText size={20} />, path: '/templates' },
     { label: 'AI Profiles', icon: <Star size={20} />, path: '/ai-profiles' },
+    { label: 'Voice Settings', icon: <Mic size={20} />, path: '/voice-settings' },
     { label: 'Training', icon: <BookOpen size={20} />, path: '/training' },
     { label: 'Analytics', icon: <BarChart2 size={20} />, path: '/analytics' },
-    { label: 'Voice Settings', icon: <Mic size={20} />, path: '/voice-settings' },
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
     { label: 'Manual', icon: <BookMarked size={20} />, path: '/manual' },
   ];
