@@ -51,11 +51,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   
   return (
     <aside className={`
-      fixed lg:static inset-y-0 left-0 z-10 
+      fixed lg:static inset-y-0 left-0 z-10 w-64
       ${bgColor} ${borderColor} border-r
       transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
       lg:translate-x-0 transition-transform duration-300 ease-in-out
       flex flex-col
+      lg:w-64 md:w-56 sm:w-48 w-40
     `}>
       <div className={`flex justify-between items-center p-4 lg:hidden ${borderColor} border-b`}>
         <span className={`text-lg font-bold ${textColor}`}>Menu</span>
