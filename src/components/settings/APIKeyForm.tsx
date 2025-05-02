@@ -71,22 +71,22 @@ const APIKeyForm: React.FC<APIKeyFormProps> = ({
     apiKey.substring(0, 4) + '•'.repeat(Math.max(0, apiKey.length - 8)) + apiKey.substring(apiKey.length - 4) : 
     '';
   
-  // Define color classes based on dark mode state
+  // Define color classes based on dark mode state for better visibility
   const cardClass = darkMode 
-    ? "border-blue-700 bg-slate-800 backdrop-blur-sm" 
-    : "border-blue-200 bg-blue-50 backdrop-blur-sm";
+    ? "border-blue-700 bg-slate-800" 
+    : "border-blue-200 bg-blue-50";
   
   const titleClass = darkMode ? "text-white" : "text-blue-900";
   const descriptionClass = darkMode ? "text-gray-300" : "text-blue-700";
   const labelClass = darkMode ? "text-gray-300" : "text-blue-800";
   const inputClass = darkMode 
     ? "bg-slate-700 border-slate-600 text-white placeholder:text-gray-400" 
-    : "bg-white border-blue-200 text-blue-900";
+    : "bg-white border-blue-200 text-blue-900 placeholder:text-blue-300";
   const buttonClass = darkMode 
     ? "bg-blue-600 hover:bg-blue-700 text-white" 
     : "bg-blue-500 hover:bg-blue-600 text-white";
   const iconButtonClass = darkMode
-    ? "bg-slate-700 border-slate-600 hover:bg-slate-600"
+    ? "bg-slate-700 border-slate-600 hover:bg-slate-600 text-white"
     : "bg-white border-blue-200 hover:bg-blue-50";
   const iconClass = darkMode ? "text-gray-300" : "text-blue-500";
   const hintTextClass = darkMode ? "text-gray-400" : "text-blue-600";
