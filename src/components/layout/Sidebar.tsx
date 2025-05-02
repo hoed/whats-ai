@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,7 +28,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   
   const isActive = (path: string) => location.pathname === path;
   
-  // Define background and text colors based on theme
   const bgColor = darkMode ? 'bg-slate-900' : 'bg-gray-50';
   const borderColor = darkMode ? 'border-slate-700' : 'border-gray-200';
   const textColor = darkMode ? 'text-gray-200' : 'text-gray-900';
@@ -53,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   
   return (
     <aside className={`
-      fixed lg:static inset-y-0 left-0 z-30 w-64 
+      fixed lg:static inset-y-0 left-0 z-40 
       ${bgColor} ${borderColor} border-r
       transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
       lg:translate-x-0 transition-transform duration-300 ease-in-out

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -38,12 +37,11 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
     navigate('/');
   };
 
-  // Define text color classes based on dark mode
   const textClass = darkMode ? "text-gray-100" : "text-gray-800";
   const logoTextClass = "text-lg sm:text-xl font-bold";
 
   return (
-    <header className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-20 transition-colors duration-200`}>
+    <header className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-50 transition-colors duration-200`}>
       <div className="flex justify-between items-center px-4 py-3 max-w-7xl mx-auto">
         <div className="flex items-center space-x-4">
           <Button 
