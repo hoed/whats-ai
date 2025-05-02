@@ -166,13 +166,16 @@ const AIProfiles = () => {
     // Default user ID for development purposes - in a real app, get from auth context
     const user_id = "00000000-0000-0000-0000-000000000000";
     
+    // Update to include the required fields
     createMutation.mutate({
       name: newProfile.name,
       description: newProfile.description,
       prompt_system: newProfile.prompt_system,
       ai_model: newProfile.ai_model,
       user_id: user_id,
-      api_key_id: null, // Set to null if not specified
+      api_key_id: null,
+      openai_api_key_id: null,
+      gemini_api_key_id: null,
     });
   };
 

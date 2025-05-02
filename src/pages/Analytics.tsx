@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +5,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from '@/integrations/supabase/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { format, parseISO, subDays } from 'date-fns';
-import { Message } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
+
+// Update the Message type to match what's coming from the database
+interface DatabaseMessage {
+  id: string;
+  contact_id: string;
+  role: string; // This can be any string in the database
+  content: string;
+  timestamp: string;
+  ai_profile_id?: string;
+  template_id?: string;
+  training_data_id?: string;
+  user_id: string;
+}
 
 const getLastSevenDays = () => {
   const result = [];
@@ -44,8 +55,8 @@ const Analytics = () => {
         // Process data for the last 7 days chart
         const days = getLastSevenDays();
         const messagesByDay = days.map(day => {
-          const count = messages?.filter((message: Message) => {
-            // Use timestamp instead of created_at
+          // Update to use DatabaseMessage type
+          const count = messages?.filter((message: DatabaseMessage) => {
             const messageDate = format(parseISO(message.timestamp || ''), 'yyyy-MM-dd');
             return messageDate === day.date;
           }).length || 0;
@@ -58,7 +69,9 @@ const Analytics = () => {
         
         // Process data for the message types pie chart
         const messageTypesCounts: Record<string, number> = {};
-        messages?.forEach((message: Message) => {
+        
+        // Update to use DatabaseMessage type
+        messages?.forEach((message: DatabaseMessage) => {
           const type = message.role || 'unknown';
           messageTypesCounts[type] = (messageTypesCounts[type] || 0) + 1;
         });

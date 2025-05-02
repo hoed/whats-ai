@@ -9,7 +9,7 @@ import { Loader2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserSettings } from '@/hooks/use-user-settings';
-import { saveElevenLabsApiKey } from '@/services/supabase';
+import { saveElevenLabsKey } from '@/services/supabase';
 
 interface VoiceSettings {
   voice_id: string;
@@ -48,7 +48,7 @@ const VoiceSettingsForm = () => {
   useEffect(() => {
     const saveApiKey = async () => {
       try {
-        await saveElevenLabsApiKey();
+        await saveElevenLabsKey();
       } catch (error) {
         console.error('Error saving ElevenLabs API key:', error);
       }
