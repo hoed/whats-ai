@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Contact, Message, AIProfile, Template, ChatSession, Stats } from "@/types";
 import { Database } from "@/integrations/supabase/types";
@@ -236,6 +235,29 @@ export const getApiKeys = async () => {
   });
   
   return keysObject;
+};
+
+// Function to save the ElevenLabs API key
+export const saveElevenLabsApiKey = async () => {
+  try {
+    // For demo purposes, we'll set the key directly
+    const { error } = await supabase
+      .from('api_keys')
+      .upsert(
+        {
+          key_name: 'elevenlabs_key',
+          key_value: 'sk_994128568881622c01fb74cf51622baa16b9cdc24b1d7780',
+          key_type: 'elevenlabs'
+        },
+        { onConflict: 'key_name' }
+      );
+
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error saving ElevenLabs API key:', error.message);
+    throw new Error('Failed to save ElevenLabs API key');
+  }
 };
 
 // Additional utility function to get the current user ID

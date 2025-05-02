@@ -18,11 +18,8 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
-    // Get API key from Supabase secret
-    const apiKey = Deno.env.get('ELEVENLABS_API_KEY')
-    if (!apiKey) {
-      throw new Error('ElevenLabs API key not configured')
-    }
+    // Use our stored ElevenLabs API key
+    const apiKey = 'sk_994128568881622c01fb74cf51622baa16b9cdc24b1d7780'
 
     // Default values if not provided
     const finalVoiceId = voiceId || 'TX3LPaxmHKxFdv7VOQHJ' // Default to Liam voice

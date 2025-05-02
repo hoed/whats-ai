@@ -7,85 +7,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { Monitor, Moon, Bell, Languages } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useUserSettings } from '@/hooks/use-user-settings';
 
 const GeneralSettingsForm: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { settings, updateSettings, isLoading } = useUserSettings();
   const [notifications, setNotifications] = useState(true);
   const [language, setLanguage] = useState('id');
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { darkMode, toggleTheme } = useTheme();
   
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        // In a real app, get user ID from auth context
-        const userId = "00000000-0000-0000-0000-000000000000"; // Placeholder user ID for demo
-        
-        const { data, error } = await supabase
-          .from('user_settings')
-          .select('*')
-          .eq('user_id', userId)
-          .maybeSingle();
-          
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching settings:', error);
-          return;
-        }
-        
-        if (data) {
-          setDarkMode(data.dark_mode || false);
-          setNotifications(data.notifications !== false); // Default to true if null
-          setLanguage(data.language || 'id');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-    
-    fetchSettings();
-  }, []);
+    if (!isLoading && settings) {
+      setNotifications(settings.notifications);
+      setLanguage(settings.language || 'id');
+    }
+  }, [settings, isLoading]);
   
   const saveSettings = async () => {
     setSaving(true);
     
     try {
-      // In a real app, get user ID from auth context
-      const userId = "00000000-0000-0000-0000-000000000000"; // Placeholder user ID for demo
-      
-      const { data: existingSettings } = await supabase
-        .from('user_settings')
-        .select('id')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      let operation;
-      
-      if (existingSettings) {
-        // Update existing settings
-        operation = supabase
-          .from('user_settings')
-          .update({
-            dark_mode: darkMode,
-            notifications: notifications,
-            language: language,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', userId);
-      } else {
-        // Insert new settings
-        operation = supabase
-          .from('user_settings')
-          .insert({
-            user_id: userId,
-            dark_mode: darkMode,
-            notifications: notifications,
-            language: language
-          });
-      }
-      
-      const { error } = await operation;
-      
-      if (error) throw error;
+      await updateSettings({
+        notifications: notifications,
+        language: language,
+      });
       
       toast({
         title: "Pengaturan disimpan",
@@ -105,31 +52,31 @@ const GeneralSettingsForm: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center justify-between bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between bg-slate-900/50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-slate-800 rounded-full">
+            <div className="p-2 bg-slate-800 dark:bg-slate-700 rounded-full">
               {darkMode ? <Moon className="h-5 w-5 text-blue-400" /> : <Monitor className="h-5 w-5 text-amber-400" />}
             </div>
             <div>
-              <Label className="text-slate-300">Mode Gelap</Label>
-              <p className="text-xs text-slate-400">Aktifkan mode gelap untuk tampilan aplikasi</p>
+              <Label className="text-slate-300 dark:text-slate-200">Mode Gelap</Label>
+              <p className="text-xs text-slate-400 dark:text-slate-300">Aktifkan mode gelap untuk tampilan aplikasi</p>
             </div>
           </div>
           <Switch
             checked={darkMode}
-            onCheckedChange={setDarkMode}
+            onCheckedChange={toggleTheme}
             className="data-[state=checked]:bg-cyan-600"
           />
         </div>
         
-        <div className="flex items-center justify-between bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between bg-slate-900/50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-slate-800 rounded-full">
+            <div className="p-2 bg-slate-800 dark:bg-slate-700 rounded-full">
               <Bell className="h-5 w-5 text-purple-400" />
             </div>
             <div>
-              <Label className="text-slate-300">Notifikasi</Label>
-              <p className="text-xs text-slate-400">Aktifkan notifikasi untuk pesan baru</p>
+              <Label className="text-slate-300 dark:text-slate-200">Notifikasi</Label>
+              <p className="text-xs text-slate-400 dark:text-slate-300">Aktifkan notifikasi untuk pesan baru</p>
             </div>
           </div>
           <Switch
@@ -139,24 +86,24 @@ const GeneralSettingsForm: React.FC = () => {
           />
         </div>
         
-        <div className="flex items-center justify-between bg-slate-900/50 p-4 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between bg-slate-900/50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-slate-800 rounded-full">
+            <div className="p-2 bg-slate-800 dark:bg-slate-700 rounded-full">
               <Languages className="h-5 w-5 text-green-400" />
             </div>
             <div>
-              <Label className="text-slate-300">Bahasa</Label>
-              <p className="text-xs text-slate-400">Pilih bahasa tampilan aplikasi</p>
+              <Label className="text-slate-300 dark:text-slate-200">Bahasa</Label>
+              <p className="text-xs text-slate-400 dark:text-slate-300">Pilih bahasa tampilan aplikasi</p>
             </div>
           </div>
           <Select
             value={language}
             onValueChange={setLanguage}
           >
-            <SelectTrigger className="w-[120px] bg-slate-800 border-slate-600">
+            <SelectTrigger className="w-[120px] bg-slate-800 dark:bg-slate-700 border-slate-600">
               <SelectValue placeholder="Bahasa" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-600">
+            <SelectContent className="bg-slate-800 dark:bg-slate-700 border-slate-600">
               <SelectItem value="id">Indonesia</SelectItem>
               <SelectItem value="en">English</SelectItem>
             </SelectContent>

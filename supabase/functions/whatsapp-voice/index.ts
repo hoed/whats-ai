@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.26.0"
 
@@ -6,6 +5,9 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+// ElevenLabs API key
+const ELEVENLABS_API_KEY = 'sk_994128568881622c01fb74cf51622baa16b9cdc24b1d7780';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -60,9 +62,9 @@ serve(async (req) => {
       apiKeys[key.key_name] = key.key_value
     })
 
-    // Check if we have the required API keys
+    // Use our direct API key if not found in the database
     if (!apiKeys['elevenlabs_key']) {
-      throw new Error('ElevenLabs API key is not configured')
+      apiKeys['elevenlabs_key'] = ELEVENLABS_API_KEY;
     }
 
     if (aiProvider === 'openai' && !apiKeys['openai_key']) {
