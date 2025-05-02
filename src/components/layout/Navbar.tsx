@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -16,6 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { darkMode } = useTheme();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
   const handleLogout = async () => {
@@ -36,8 +38,12 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
     navigate('/');
   };
 
+  // Define text color classes based on dark mode
+  const textClass = darkMode ? "text-gray-100" : "text-gray-800";
+  const logoTextClass = "text-lg sm:text-xl font-bold";
+
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <header className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-20 transition-colors duration-200`}>
       <div className="flex justify-between items-center px-4 py-3 max-w-7xl mx-auto">
         <div className="flex items-center space-x-4">
           <Button 
@@ -46,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             className="lg:hidden"
             onClick={onMenuClick}
           >
-            <Menu className="h-5 w-5" />
+            <Menu className={`h-5 w-5 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
           </Button>
           <button 
             onClick={() => navigate('/dashboard')} 
@@ -59,36 +65,36 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
         
         <div className="flex items-center space-x-1 sm:space-x-2">
           <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+            <Bell className={`h-5 w-5 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => navigate('/settings')}
           >
-            <Settings className="h-5 w-5" />
+            <Settings className={`h-5 w-5 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
           </Button>
           <Button variant="ghost" size="icon">
-            <HelpCircle className="h-5 w-5" />
+            <HelpCircle className={`h-5 w-5 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
           </Button>
           
           {user ? (
             <Button 
               variant="ghost" 
               onClick={handleLogout}
-              className="p-2"
+              className={`p-2 ${darkMode ? 'hover:bg-slate-700 text-gray-200' : 'hover:bg-gray-100'}`}
             >
-              <LogOut className="h-5 w-5 sm:mr-2" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className={`h-5 w-5 sm:mr-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
+              <span className={`hidden sm:inline ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Logout</span>
             </Button>
           ) : (
             <Button 
               variant="ghost" 
               onClick={() => setShowAuthDialog(true)}
-              className="p-2"
+              className={`p-2 ${darkMode ? 'hover:bg-slate-700 text-gray-200' : 'hover:bg-gray-100'}`}
             >
-              <LogIn className="h-5 w-5 sm:mr-2" />
-              <span className="hidden sm:inline">Login</span>
+              <LogIn className={`h-5 w-5 sm:mr-2 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`} />
+              <span className={`hidden sm:inline ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>Login</span>
             </Button>
           )}
         </div>

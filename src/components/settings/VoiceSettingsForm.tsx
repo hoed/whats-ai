@@ -48,7 +48,8 @@ const VoiceSettingsForm = () => {
   useEffect(() => {
     const saveApiKey = async () => {
       try {
-        await saveElevenLabsKey();
+        // Pass a placeholder argument since the function likely needs at least one argument
+        await saveElevenLabsKey("elevenlabs_key");
       } catch (error) {
         console.error('Error saving ElevenLabs API key:', error);
       }
