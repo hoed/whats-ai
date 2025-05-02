@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { Check, Loader2, Eye, EyeOff } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface APIKeyFormProps {
   title: string;
@@ -32,6 +33,7 @@ const APIKeyForm: React.FC<APIKeyFormProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const { darkMode } = useTheme();
   
   // Initialize with prop value when available
   useEffect(() => {
@@ -69,16 +71,36 @@ const APIKeyForm: React.FC<APIKeyFormProps> = ({
     apiKey.substring(0, 4) + '•'.repeat(Math.max(0, apiKey.length - 8)) + apiKey.substring(apiKey.length - 4) : 
     '';
   
+  // Define color classes based on dark mode state for better visibility
+  const cardClass = darkMode 
+    ? "border-blue-700 bg-slate-800" 
+    : "border-blue-200 bg-blue-50";
+  
+  const titleClass = darkMode ? "text-white" : "text-blue-900";
+  const descriptionClass = darkMode ? "text-gray-300" : "text-blue-700";
+  const labelClass = darkMode ? "text-gray-300" : "text-blue-800";
+  const inputClass = darkMode 
+    ? "bg-slate-700 border-slate-600 text-white placeholder:text-gray-400" 
+    : "bg-white border-blue-200 text-blue-900 placeholder:text-blue-300";
+  const buttonClass = darkMode 
+    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+    : "bg-blue-500 hover:bg-blue-600 text-white";
+  const iconButtonClass = darkMode
+    ? "bg-slate-700 border-slate-600 hover:bg-slate-600 text-white"
+    : "bg-white border-blue-200 hover:bg-blue-50";
+  const iconClass = darkMode ? "text-gray-300" : "text-blue-500";
+  const hintTextClass = darkMode ? "text-gray-400" : "text-blue-600";
+  
   return (
-    <Card className="border border-blue-900/20 bg-blue-950/10 backdrop-blur-sm">
+    <Card className={cardClass}>
       <CardHeader>
-        <CardTitle className="text-blue-100">{title}</CardTitle>
-        <CardDescription className="text-blue-200/70">{description}</CardDescription>
+        <CardTitle className={titleClass}>{title}</CardTitle>
+        <CardDescription className={descriptionClass}>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor={apiKeyName} className="text-blue-100">{apiKeyLabel}</Label>
+            <Label htmlFor={apiKeyName} className={labelClass}>{apiKeyLabel}</Label>
             <div className="flex items-center">
               <Input
                 id={apiKeyName}
@@ -86,21 +108,21 @@ const APIKeyForm: React.FC<APIKeyFormProps> = ({
                 placeholder={apiKeyPlaceholder}
                 value={isVisible ? apiKey : (apiKey ? maskedValue : '')}
                 onChange={(e) => setApiKey(e.target.value)}
-                className="bg-blue-950/30 border-blue-900/50 text-blue-100"
+                className={inputClass}
               />
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                className="ml-2 bg-blue-950/30 border-blue-900/50 hover:bg-blue-900/30"
+                className={`ml-2 ${iconButtonClass}`}
                 onClick={() => setIsVisible(!isVisible)}
               >
-                {isVisible ? <EyeOff className="h-4 w-4 text-blue-300" /> : <Eye className="h-4 w-4 text-blue-300" />}
+                {isVisible ? <EyeOff className={`h-4 w-4 ${iconClass}`} /> : <Eye className={`h-4 w-4 ${iconClass}`} />}
               </Button>
             </div>
-            <p className="text-xs text-blue-200/70">
+            <p className={`text-xs ${hintTextClass}`}>
               {initialValue ? (
-                <span className="flex items-center text-green-400">
+                <span className="flex items-center text-green-500">
                   <Check className="h-4 w-4 mr-1" /> API Key is set up
                 </span>
               ) : (
@@ -111,7 +133,7 @@ const APIKeyForm: React.FC<APIKeyFormProps> = ({
           <Button 
             onClick={handleSave} 
             disabled={isSaving || isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className={`w-full ${buttonClass}`}
           >
             {isSaving || isLoading ? (
               <>

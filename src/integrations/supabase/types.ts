@@ -15,8 +15,10 @@ export type Database = {
           api_key_id: string | null
           created_at: string | null
           description: string | null
+          gemini_api_key_id: string | null
           id: string
           name: string
+          openai_api_key_id: string | null
           prompt_system: string
           user_id: string
         }
@@ -25,8 +27,10 @@ export type Database = {
           api_key_id?: string | null
           created_at?: string | null
           description?: string | null
+          gemini_api_key_id?: string | null
           id?: string
           name: string
+          openai_api_key_id?: string | null
           prompt_system: string
           user_id: string
         }
@@ -35,12 +39,28 @@ export type Database = {
           api_key_id?: string | null
           created_at?: string | null
           description?: string | null
+          gemini_api_key_id?: string | null
           id?: string
           name?: string
+          openai_api_key_id?: string | null
           prompt_system?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ai_profiles_gemini_api_key_id_fkey"
+            columns: ["gemini_api_key_id"]
+            isOneToOne: false
+            referencedRelation: "gemini_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_profiles_openai_api_key_id_fkey"
+            columns: ["openai_api_key_id"]
+            isOneToOne: false
+            referencedRelation: "openai_api_keys"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fk_ai_profiles_api_keys"
             columns: ["api_key_id"]
@@ -140,6 +160,63 @@ export type Database = {
         }
         Relationships: []
       }
+      elevenlabs_api_keys: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          default_model: string | null
+          default_voice_id: string | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          default_model?: string | null
+          default_voice_id?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          default_model?: string | null
+          default_voice_id?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      gemini_api_keys: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          id: string
+          model_preference: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          id?: string
+          model_preference?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          model_preference?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           ai_profile_id: string | null
@@ -211,6 +288,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      openai_api_keys: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          id: string
+          model_preference: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          id?: string
+          model_preference?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          model_preference?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       templates: {
         Row: {
@@ -305,50 +409,120 @@ export type Database = {
           },
         ]
       }
+      twilio_api_keys: {
+        Row: {
+          account_sid: string
+          auth_token: string
+          created_at: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          account_sid: string
+          auth_token: string
+          created_at?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          account_sid?: string
+          auth_token?: string
+          created_at?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_settings: {
         Row: {
           ai_provider: string | null
           auto_voice_responses: boolean | null
           dark_mode: boolean | null
+          elevenlabs_api_key_id: string | null
           id: string
           language: string | null
           notifications: boolean | null
+          preferred_whatsapp_provider:
+            | Database["public"]["Enums"]["api_provider_type"]
+            | null
           similarity_boost: number | null
           stability: number | null
+          twilio_api_key_id: string | null
           updated_at: string | null
           user_id: string | null
           voice_id: string | null
           voice_model: string | null
+          whatsapp_api_key_id: string | null
         }
         Insert: {
           ai_provider?: string | null
           auto_voice_responses?: boolean | null
           dark_mode?: boolean | null
+          elevenlabs_api_key_id?: string | null
           id?: string
           language?: string | null
           notifications?: boolean | null
+          preferred_whatsapp_provider?:
+            | Database["public"]["Enums"]["api_provider_type"]
+            | null
           similarity_boost?: number | null
           stability?: number | null
+          twilio_api_key_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           voice_id?: string | null
           voice_model?: string | null
+          whatsapp_api_key_id?: string | null
         }
         Update: {
           ai_provider?: string | null
           auto_voice_responses?: boolean | null
           dark_mode?: boolean | null
+          elevenlabs_api_key_id?: string | null
           id?: string
           language?: string | null
           notifications?: boolean | null
+          preferred_whatsapp_provider?:
+            | Database["public"]["Enums"]["api_provider_type"]
+            | null
           similarity_boost?: number | null
           stability?: number | null
+          twilio_api_key_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           voice_id?: string | null
           voice_model?: string | null
+          whatsapp_api_key_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_elevenlabs_api_key_id_fkey"
+            columns: ["elevenlabs_api_key_id"]
+            isOneToOne: false
+            referencedRelation: "elevenlabs_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_settings_twilio_api_key_id_fkey"
+            columns: ["twilio_api_key_id"]
+            isOneToOne: false
+            referencedRelation: "twilio_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_settings_whatsapp_api_key_id_fkey"
+            columns: ["whatsapp_api_key_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -377,15 +551,57 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_api_keys: {
+        Row: {
+          api_key: string
+          business_account_id: string | null
+          created_at: string | null
+          id: string
+          phone_number_id: string | null
+          provider: Database["public"]["Enums"]["api_provider_type"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key: string
+          business_account_id?: string | null
+          created_at?: string | null
+          id?: string
+          phone_number_id?: string | null
+          provider?: Database["public"]["Enums"]["api_provider_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key?: string
+          business_account_id?: string | null
+          created_at?: string | null
+          id?: string
+          phone_number_id?: string | null
+          provider?: Database["public"]["Enums"]["api_provider_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      migrate_api_keys: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       api_key_type: "whatsapp" | "openai" | "gemini" | "elevenlabs"
+      api_provider_type:
+        | "openai"
+        | "gemini"
+        | "whatsapp"
+        | "elevenlabs"
+        | "twilio"
       session_status: "open" | "pending" | "closed"
     }
     CompositeTypes: {
@@ -503,6 +719,13 @@ export const Constants = {
   public: {
     Enums: {
       api_key_type: ["whatsapp", "openai", "gemini", "elevenlabs"],
+      api_provider_type: [
+        "openai",
+        "gemini",
+        "whatsapp",
+        "elevenlabs",
+        "twilio",
+      ],
       session_status: ["open", "pending", "closed"],
     },
   },

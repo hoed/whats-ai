@@ -26,6 +26,7 @@ import { Toaster } from '@/components/ui/toaster';
 // Context
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/hooks/use-toast';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -42,26 +43,28 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ToastProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/chats" element={<Chats />} />
-              <Route path="/chats/:id" element={<ChatDetail />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/ai-profiles" element={<AIProfiles />} />
-              <Route path="/templates" element={<Templates />} />
-              <Route path="/training" element={<Training />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/voice-settings" element={<VoiceSettings />} />
-              <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
-              <Route path="/manual" element={<Manual />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Router>
-          <Toaster />
+          <ThemeProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/chats" element={<Chats />} />
+                <Route path="/chats/:id" element={<ChatDetail />} />
+                <Route path="/contacts" element={<Contacts />} />
+                <Route path="/ai-profiles" element={<AIProfiles />} />
+                <Route path="/templates" element={<Templates />} />
+                <Route path="/training" element={<Training />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/voice-settings" element={<VoiceSettings />} />
+                <Route path="/setup-whatsapp" element={<SetupWhatsApp />} />
+                <Route path="/manual" element={<Manual />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Router>
+            <Toaster />
+          </ThemeProvider>
         </ToastProvider>
       </AuthProvider>
     </QueryClientProvider>
