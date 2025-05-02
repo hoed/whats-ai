@@ -7,9 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { useUserSettings } from '@/hooks/use-user-settings';
-import { saveElevenLabsKey } from '@/services/supabase';
 
 interface VoiceSettings {
   voice_id: string;
@@ -44,19 +42,6 @@ const VoiceSettingsForm = () => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Save ElevenLabs API key on component mount
-  useEffect(() => {
-    const saveApiKey = async () => {
-      try {
-        // Pass a placeholder argument since the function likely needs at least one argument
-        await saveElevenLabsKey("elevenlabs_key");
-      } catch (error) {
-        console.error('Error saving ElevenLabs API key:', error);
-      }
-    };
-    saveApiKey();
-  }, []);
-  
   // Load voice settings from user settings
   useEffect(() => {
     if (!isLoading && settings) {
@@ -138,7 +123,7 @@ const VoiceSettingsForm = () => {
   
   if (isLoading) {
     return (
-      <Card className="border border-blue-900/20 bg-blue-950/5 backdrop-blur-sm dark:border-blue-800/30 dark:bg-blue-900/10">
+      <Card className="border border-gray-300 bg-white">
         <CardContent className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
         </CardContent>
@@ -147,43 +132,43 @@ const VoiceSettingsForm = () => {
   }
   
   return (
-    <Card className="border border-blue-900/20 bg-blue-950/5 backdrop-blur-sm dark:border-blue-800/30 dark:bg-blue-900/10">
+    <Card className="border border-gray-300 bg-white">
       <CardHeader>
-        <CardTitle className="text-xl text-blue-100 dark:text-blue-50">Voice Settings</CardTitle>
-        <CardDescription className="text-blue-200/70 dark:text-blue-200/60">
+        <CardTitle className="text-xl text-gray-900">Voice Settings</CardTitle>
+        <CardDescription className="text-gray-600">
           Configure how your AI assistant sounds when responding to WhatsApp calls.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="ai-provider" className="text-blue-100 dark:text-blue-50">AI Provider</Label>
+          <Label htmlFor="ai-provider" className="text-gray-900">AI Provider</Label>
           <Select 
             value={voiceSettings.ai_provider} 
             onValueChange={(value) => setVoiceSettings({...voiceSettings, ai_provider: value as 'openai' | 'gemini'})}
           >
-            <SelectTrigger className="bg-blue-950/30 border-blue-900/50 text-blue-100 dark:bg-blue-900/50 dark:border-blue-800/50 dark:text-blue-50">
+            <SelectTrigger className="bg-white border-gray-300 text-gray-900">
               <SelectValue placeholder="Select AI Provider" />
             </SelectTrigger>
-            <SelectContent className="dark:bg-slate-800">
+            <SelectContent>
               <SelectItem value="openai">OpenAI</SelectItem>
               <SelectItem value="gemini">Google Gemini</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-blue-200/70 dark:text-blue-200/60">
+          <p className="text-xs text-gray-600">
             Choose which AI provider to use for generating responses.
           </p>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="voice-selection" className="text-blue-100 dark:text-blue-50">Voice</Label>
+          <Label htmlFor="voice-selection" className="text-gray-900">Voice</Label>
           <Select 
             value={voiceSettings.voice_id} 
             onValueChange={(value) => setVoiceSettings({...voiceSettings, voice_id: value})}
           >
-            <SelectTrigger className="bg-blue-950/30 border-blue-900/50 text-blue-100 dark:bg-blue-900/50 dark:border-blue-800/50 dark:text-blue-50">
+            <SelectTrigger className="bg-white border-gray-300 text-gray-900">
               <SelectValue placeholder="Select Voice" />
             </SelectTrigger>
-            <SelectContent className="dark:bg-slate-800">
+            <SelectContent>
               {predefinedVoices.map((voice) => (
                 <SelectItem key={voice.id} value={voice.id}>
                   {voice.name} - {voice.description}
@@ -196,7 +181,7 @@ const VoiceSettingsForm = () => {
               type="button" 
               variant="outline" 
               size="sm" 
-              className="bg-blue-950/30 hover:bg-blue-900/40 border-blue-900/50 text-blue-100 dark:bg-blue-900/40 dark:hover:bg-blue-800/50 dark:border-blue-800/50 dark:text-blue-50"
+              className="bg-white hover:bg-gray-50 border-gray-300 text-gray-900"
               onClick={testVoice}
               disabled={audioPlaying}
             >
@@ -211,21 +196,21 @@ const VoiceSettingsForm = () => {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="voice-model" className="text-blue-100 dark:text-blue-50">Voice Model</Label>
+          <Label htmlFor="voice-model" className="text-gray-900">Voice Model</Label>
           <Select 
             value={voiceSettings.voice_model} 
             onValueChange={(value) => setVoiceSettings({...voiceSettings, voice_model: value})}
           >
-            <SelectTrigger className="bg-blue-950/30 border-blue-900/50 text-blue-100 dark:bg-blue-900/50 dark:border-blue-800/50 dark:text-blue-50">
+            <SelectTrigger className="bg-white border-gray-300 text-gray-900">
               <SelectValue placeholder="Select Model" />
             </SelectTrigger>
-            <SelectContent className="dark:bg-slate-800">
+            <SelectContent>
               <SelectItem value="eleven_multilingual_v2">Multilingual V2 (High Quality)</SelectItem>
               <SelectItem value="eleven_turbo_v2">Turbo V2 (Faster)</SelectItem>
               <SelectItem value="eleven_monolingual_v1">English V1 (Legacy)</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-blue-200/70 dark:text-blue-200/60">
+          <p className="text-xs text-gray-600">
             Higher quality models produce better speech but may be slower.
           </p>
         </div>
@@ -233,8 +218,8 @@ const VoiceSettingsForm = () => {
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="stability" className="text-blue-100 dark:text-blue-50">Stability</Label>
-              <span className="text-sm text-blue-300 dark:text-blue-200">{Math.round(voiceSettings.stability * 100)}%</span>
+              <Label htmlFor="stability" className="text-gray-900">Stability</Label>
+              <span className="text-sm text-gray-600">{Math.round(voiceSettings.stability * 100)}%</span>
             </div>
             <Slider
               id="stability"
@@ -245,15 +230,15 @@ const VoiceSettingsForm = () => {
               onValueChange={(value) => setVoiceSettings({...voiceSettings, stability: value[0]})}
               className="w-full"
             />
-            <p className="text-xs text-blue-200/70 dark:text-blue-200/60">
+            <p className="text-xs text-gray-600">
               Higher stability makes the voice more consistent but less expressive.
             </p>
           </div>
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="similarity" className="text-blue-100 dark:text-blue-50">Similarity Boost</Label>
-              <span className="text-sm text-blue-300 dark:text-blue-200">{Math.round(voiceSettings.similarity_boost * 100)}%</span>
+              <Label htmlFor="similarity" className="text-gray-900">Similarity Boost</Label>
+              <span className="text-sm text-gray-600">{Math.round(voiceSettings.similarity_boost * 100)}%</span>
             </div>
             <Slider
               id="similarity"
@@ -264,7 +249,7 @@ const VoiceSettingsForm = () => {
               onValueChange={(value) => setVoiceSettings({...voiceSettings, similarity_boost: value[0]})}
               className="w-full"
             />
-            <p className="text-xs text-blue-200/70 dark:text-blue-200/60">
+            <p className="text-xs text-gray-600">
               Higher values make the voice sound more like the reference.
             </p>
           </div>
@@ -276,7 +261,7 @@ const VoiceSettingsForm = () => {
             checked={voiceSettings.auto_voice_responses}
             onCheckedChange={(checked) => setVoiceSettings({...voiceSettings, auto_voice_responses: checked})}
           />
-          <Label htmlFor="auto-voice" className="text-blue-100 dark:text-blue-50">
+          <Label htmlFor="auto-voice" className="text-gray-900">
             Auto-convert AI responses to voice in WhatsApp calls
           </Label>
         </div>
@@ -284,7 +269,7 @@ const VoiceSettingsForm = () => {
         <Button 
           onClick={handleSave} 
           disabled={saving}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white"
         >
           {saving ? (
             <>
