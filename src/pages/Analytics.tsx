@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Bar } from 'react-chartjs-2';
@@ -83,7 +84,7 @@ const Analytics = () => {
 
   // Prepare data for the chart: Messages per day
   const messagesByDay = messages.reduce((acc: { [key: string]: number }, message) => {
-    const date = new Date(message.created_at).toLocaleDateString('en-US', {
+    const date = new Date(message.timestamp).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

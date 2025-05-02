@@ -7,6 +7,7 @@ import APIKeyForm from '@/components/settings/APIKeyForm';
 import { useToast } from '@/components/ui/use-toast';
 import { getApiKeys, saveApiKey } from '@/services/supabase';
 import { Database } from '@/integrations/supabase/types';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type ApiKeyRecord = Record<string, { value: string; type: string }>;
 
@@ -14,6 +15,7 @@ const APIKeysForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiKeys, setApiKeys] = useState<ApiKeyRecord>({});
   const { toast } = useToast();
+  const { darkMode } = useTheme();
 
   // Load API keys from Supabase on component mount
   useEffect(() => {
@@ -70,11 +72,15 @@ const APIKeysForm = () => {
     }
   };
 
+  // Use different classes based on darkMode
+  const headerTextClass = darkMode ? "text-white" : "text-gray-900";
+  const descriptionTextClass = darkMode ? "text-gray-300" : "text-gray-600";
+  
   return (
-    <Card className="border border-blue-900/20 bg-blue-950/5 backdrop-blur-sm">
+    <Card className={darkMode ? "border-blue-800 bg-slate-800" : "border-blue-200 bg-white"}>
       <CardHeader>
-        <CardTitle className="text-xl text-blue-100">API Keys</CardTitle>
-        <CardDescription className="text-blue-200/70">
+        <CardTitle className={`text-xl ${headerTextClass}`}>API Keys</CardTitle>
+        <CardDescription className={descriptionTextClass}>
           Configure your API keys for various services.
         </CardDescription>
       </CardHeader>
