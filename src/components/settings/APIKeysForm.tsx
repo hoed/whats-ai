@@ -8,6 +8,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { getApiKeys, saveApiKey } from '@/services/supabase';
 import { Database } from '@/integrations/supabase/types';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import TwilioAPIForm from '@/components/settings/TwilioAPIForm';
 
 type ApiKeyRecord = Record<string, { value: string; type: string }>;
 
@@ -75,9 +78,10 @@ const APIKeysForm = () => {
   // Use different classes based on darkMode
   const headerTextClass = darkMode ? "text-white" : "text-gray-900";
   const descriptionTextClass = darkMode ? "text-gray-300" : "text-gray-600";
+  const cardClass = darkMode ? "border-blue-800 bg-slate-800" : "border-blue-200 bg-white";
   
   return (
-    <Card className={darkMode ? "border-blue-800 bg-slate-800" : "border-blue-200 bg-white"}>
+    <Card className={cardClass}>
       <CardHeader>
         <CardTitle className={`text-xl ${headerTextClass}`}>API Keys</CardTitle>
         <CardDescription className={descriptionTextClass}>
@@ -86,8 +90,9 @@ const APIKeysForm = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="whatsapp">
-          <TabsList className="grid grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-5 mb-8">
             <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+            <TabsTrigger value="twilio">Twilio</TabsTrigger>
             <TabsTrigger value="openai">OpenAI</TabsTrigger>
             <TabsTrigger value="gemini">Gemini</TabsTrigger>
             <TabsTrigger value="elevenlabs">ElevenLabs</TabsTrigger>
@@ -104,6 +109,10 @@ const APIKeysForm = () => {
               onSave={(key) => handleSaveApiKey('whatsapp_key', key)}
               isLoading={isLoading}
             />
+          </TabsContent>
+
+          <TabsContent value="twilio">
+            <TwilioAPIForm />
           </TabsContent>
           
           <TabsContent value="openai">

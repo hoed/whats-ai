@@ -215,6 +215,261 @@ export const saveApiKey = async (
       ]);
     if (error) throw error;
   }
+
+  // Also save to the specific table based on key type
+  try {
+    if (keyType === 'openai') {
+      await saveOpenAIKey(keyValue);
+    } else if (keyType === 'gemini') {
+      await saveGeminiKey(keyValue);
+    } else if (keyType === 'elevenlabs') {
+      await saveElevenLabsKey(keyValue);
+    } else if (keyType === 'whatsapp') {
+      await saveWhatsAppKey(keyValue);
+    }
+  } catch (error) {
+    console.error(`Error saving to specific ${keyType} table:`, error);
+    // Continue even if specific table save fails
+  }
+};
+
+// Save OpenAI API Key
+export const saveOpenAIKey = async (apiKey: string, modelPreference = 'gpt-4o') => {
+  const userId = getCurrentUserId();
+
+  // Check if user already has a key
+  const { data: existingKey, error: fetchError } = await supabase
+    .from('openai_api_keys')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existingKey) {
+    // Update existing key
+    const { error } = await supabase
+      .from('openai_api_keys')
+      .update({
+        api_key: apiKey,
+        model_preference: modelPreference,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingKey.id);
+    
+    if (error) throw error;
+    return existingKey.id;
+  } else {
+    // Create new key
+    const { data, error } = await supabase
+      .from('openai_api_keys')
+      .insert({
+        user_id: userId,
+        api_key: apiKey,
+        model_preference: modelPreference
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data.id;
+  }
+};
+
+// Save Gemini API Key
+export const saveGeminiKey = async (apiKey: string, modelPreference = 'gemini-pro') => {
+  const userId = getCurrentUserId();
+
+  // Check if user already has a key
+  const { data: existingKey, error: fetchError } = await supabase
+    .from('gemini_api_keys')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existingKey) {
+    // Update existing key
+    const { error } = await supabase
+      .from('gemini_api_keys')
+      .update({
+        api_key: apiKey,
+        model_preference: modelPreference,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingKey.id);
+    
+    if (error) throw error;
+    return existingKey.id;
+  } else {
+    // Create new key
+    const { data, error } = await supabase
+      .from('gemini_api_keys')
+      .insert({
+        user_id: userId,
+        api_key: apiKey,
+        model_preference: modelPreference
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data.id;
+  }
+};
+
+// Save ElevenLabs API Key
+export const saveElevenLabsKey = async (
+  apiKey: string, 
+  voiceId = 'TX3LPaxmHKxFdv7VOQHJ', 
+  model = 'eleven_multilingual_v2'
+) => {
+  const userId = getCurrentUserId();
+
+  // Check if user already has a key
+  const { data: existingKey, error: fetchError } = await supabase
+    .from('elevenlabs_api_keys')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existingKey) {
+    // Update existing key
+    const { error } = await supabase
+      .from('elevenlabs_api_keys')
+      .update({
+        api_key: apiKey,
+        default_voice_id: voiceId,
+        default_model: model,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingKey.id);
+    
+    if (error) throw error;
+    return existingKey.id;
+  } else {
+    // Create new key
+    const { data, error } = await supabase
+      .from('elevenlabs_api_keys')
+      .insert({
+        user_id: userId,
+        api_key: apiKey,
+        default_voice_id: voiceId,
+        default_model: model
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data.id;
+  }
+};
+
+// Save WhatsApp API Key
+export const saveWhatsAppKey = async (apiKey: string) => {
+  const userId = getCurrentUserId();
+
+  // Check if user already has a key
+  const { data: existingKey, error: fetchError } = await supabase
+    .from('whatsapp_api_keys')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existingKey) {
+    // Update existing key
+    const { error } = await supabase
+      .from('whatsapp_api_keys')
+      .update({
+        api_key: apiKey,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingKey.id);
+    
+    if (error) throw error;
+    return existingKey.id;
+  } else {
+    // Create new key
+    const { data, error } = await supabase
+      .from('whatsapp_api_keys')
+      .insert({
+        user_id: userId,
+        api_key: apiKey
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data.id;
+  }
+};
+
+// Save Twilio credentials
+export const saveTwilioKeys = async (credentials: {
+  accountSid: string;
+  authToken: string;
+  phoneNumber: string;
+}) => {
+  const userId = getCurrentUserId();
+
+  // Check if user already has Twilio credentials
+  const { data: existingCreds, error: fetchError } = await supabase
+    .from('twilio_api_keys')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  if (existingCreds) {
+    // Update existing credentials
+    const { error } = await supabase
+      .from('twilio_api_keys')
+      .update({
+        account_sid: credentials.accountSid,
+        auth_token: credentials.authToken,
+        phone_number: credentials.phoneNumber,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingCreds.id);
+    
+    if (error) throw error;
+    return existingCreds.id;
+  } else {
+    // Create new credentials
+    const { data, error } = await supabase
+      .from('twilio_api_keys')
+      .insert({
+        user_id: userId,
+        account_sid: credentials.accountSid,
+        auth_token: credentials.authToken,
+        phone_number: credentials.phoneNumber
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data.id;
+  }
+};
+
+// Get Twilio credentials
+export const getTwilioKeys = async () => {
+  const userId = getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from('twilio_api_keys')
+    .select('account_sid, auth_token, phone_number')
+    .eq('user_id', userId)
+    .maybeSingle();
+  
+  if (error) throw error;
+  return data;
 };
 
 // Get API Keys
@@ -235,29 +490,6 @@ export const getApiKeys = async () => {
   });
   
   return keysObject;
-};
-
-// Function to save the ElevenLabs API key
-export const saveElevenLabsApiKey = async () => {
-  try {
-    // For demo purposes, we'll set the key directly
-    const { error } = await supabase
-      .from('api_keys')
-      .upsert(
-        {
-          key_name: 'elevenlabs_key',
-          key_value: 'sk_994128568881622c01fb74cf51622baa16b9cdc24b1d7780',
-          key_type: 'elevenlabs'
-        },
-        { onConflict: 'key_name' }
-      );
-
-    if (error) throw error;
-    return true;
-  } catch (error: any) {
-    console.error('Error saving ElevenLabs API key:', error.message);
-    throw new Error('Failed to save ElevenLabs API key');
-  }
 };
 
 // Additional utility function to get the current user ID

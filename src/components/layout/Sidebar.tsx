@@ -30,12 +30,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const isActive = (path: string) => location.pathname === path;
   
   // Define background and text colors based on theme
-  const bgColor = darkMode ? 'bg-slate-800' : 'bg-gray-50';
+  const bgColor = darkMode ? 'bg-slate-900' : 'bg-gray-50';
   const borderColor = darkMode ? 'border-slate-700' : 'border-gray-200';
   const textColor = darkMode ? 'text-gray-200' : 'text-gray-900';
   const menuActiveColor = darkMode ? 'bg-blue-700 hover:bg-blue-800' : 'bg-brand-blue hover:bg-brand-blue/90';
-  const menuInactiveColor = darkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-100';
-  const phoneStatusBg = darkMode ? 'bg-slate-700' : 'bg-white';
+  const menuInactiveColor = darkMode ? 'hover:bg-slate-800' : 'hover:bg-gray-100';
+  const phoneStatusBg = darkMode ? 'bg-slate-800' : 'bg-white';
   const phoneStatusText = darkMode ? 'text-gray-300' : 'text-gray-900';
   const phoneStatusDetailText = darkMode ? 'text-gray-400' : 'text-gray-400';
   
